@@ -13,9 +13,16 @@ export const GET = async (url: string) => {
 
 export const POST = async (url: string, data: any) => {
     try {
-        const response = await axios.post(BASE_URL+url, data);
-        return response.data;
+        const response = await axios.post(BASE_URL + url, data);
+        return { success: true, data: response.data };
     } catch (error) {
-        console.error(error);
+        if (axios.isAxiosError(error) && error.response) {
+            return { 
+                success: false, 
+                error: error.response.data.message || error.response.data || 'An error occurred'
+            };
+        } else {
+            return { success: false, error: 'An unexpected error occurred' };
+        }
     }
-    }
+};

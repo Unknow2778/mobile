@@ -6,13 +6,10 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator, // Import ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import {
-  GestureHandlerRootView,
-  ScrollView,
-} from 'react-native-gesture-handler';
+
 import { currencyFormatter } from '../helperFun/currencyFormatter';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GET } from '../api/api';
@@ -24,6 +21,7 @@ import {
   IconTrendingUp,
   IconWaveSquare,
   IconHeartFilled,
+  IconBell,
 } from '@tabler/icons-react-native';
 import Fuse from 'fuse.js';
 import { useAppContext } from '../appStore/context';
@@ -58,25 +56,94 @@ const calculatePercentageChange = (
   return ((currentPrice - previousPrice) / previousPrice) * 100;
 };
 
+const HEADER_MAX_HEIGHT = 115;
+const HEADER_MIN_HEIGHT = 30;
+const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+
+const DynamicHeader = ({
+  value,
+  searchQuery,
+  setSearchQuery,
+}: {
+  value: Animated.Value;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+}) => {
+  const headerTranslateY = value.interpolate({
+    inputRange: [0, SCROLL_DISTANCE],
+    outputRange: [0, -SCROLL_DISTANCE / 2],
+    extrapolate: 'clamp',
+  });
+
+  const headerOpacity = value.interpolate({
+    inputRange: [0, SCROLL_DISTANCE],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  return (
+    <Animated.View
+      style={[
+        styles.header,
+        {
+          transform: [{ translateY: headerTranslateY }],
+        },
+      ]}
+    >
+      <LinearGradient
+        colors={['#CEF18C', '#CEF18C', '#e6f1d1', 'transparent']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      >
+        <Animated.View
+          style={{
+            opacity: headerOpacity,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginHorizontal: 10,
+          }}
+        >
+          <Image source={logo} style={styles.logo} />
+          <IconBell size={24} color='#104515' />
+        </Animated.View>
+        <View style={styles.searchContainer}>
+          <TextInput
+            onChangeText={handleSearch}
+            placeholder='Search By Vegetables'
+            style={[
+              styles.searchInput,
+              styles.shadowProp,
+              styles.lightElevation,
+            ]}
+          />
+        </View>
+      </LinearGradient>
+    </Animated.View>
+  );
+};
+
 const Home = () => {
   const [dataArray, setDataArray] = useState<DataItem[]>([]);
   const [searchData, setSearchData] = useState<DataItem[]>(dataArray);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true); // Add loading state
+  const [loading, setLoading] = useState<boolean>(true);
   const scrollY = useRef(new Animated.Value(0)).current;
-  const context = useAppContext();
+  const { addLikedItem, removeLikedItem, isItemLiked } = useAppContext();
 
-  useEffect(() => {
-    context.setScrollY(scrollY);
-  }, [context.scrollY]);
   useEffect(() => {
     // Fetch data here
     const fetachData = async () => {
-      setLoading(true); // Set loading to true before fetching data
+      setLoading(true);
       const data = await GET('/markets/productPriceInAllMarkets');
+      console.log(data);
       setDataArray(data.productPrices);
       setSearchData(data.productPrices);
-      setLoading(false); // Set loading to false after data is fetched
+      setLoading(false);
     };
     fetachData();
   }, []);
@@ -84,7 +151,7 @@ const Home = () => {
   useEffect(() => {
     const fuse = new Fuse(dataArray, {
       keys: ['product.name'],
-      threshold: 0.3, // Adjust this value to control the fuzziness
+      threshold: 0.3,
     });
 
     if (searchQuery.trim() === '') {
@@ -95,201 +162,178 @@ const Home = () => {
     }
   }, [searchQuery, dataArray]);
 
-  const handleLike = (index: number) => {
-    const updatedData = [...dataArray];
-    updatedData[index].liked = !updatedData[index].liked;
-    updatedData.sort((a, b) => (b.liked ? 1 : 0) - (a.liked ? 1 : 0));
-    setDataArray(updatedData);
-    setSearchData(updatedData);
+  const handleLike = (item: DataItem) => {
+    if (isItemLiked(item)) {
+      removeLikedItem(item);
+    } else {
+      addLikedItem(item);
+    }
+    // Trigger a re-render
+    setDataArray([...dataArray]);
+    setSearchData([...searchData]);
   };
 
   return (
-    <GestureHandlerRootView style={styles.root}>
-      {/* <SafeAreaView style={styles.safeArea}> */}
-      <LinearGradient
-        colors={['#e6f1d1', '#CEF18C']}
-        start={{ x: 0, y: 1 }}
-        end={{ x: 0, y: 0 }}
-      >
-        <View style={[styles.searchContainer]}>
-          <TextInput
-            placeholder='Search By Vegetables '
-            style={[
-              styles.searchInput,
-              styles.shadowProp,
-              styles.lightElevation,
-            ]}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-      </LinearGradient>
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size='large' color='#000' />
-        </View>
-      ) : (
-        <FlatList
-          style={styles.flatList}
-          data={searchData}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: context.scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          // ListHeaderComponent={
-          //   <View style={[styles.searchContainer]}>
-          //     <TextInput
-          //       placeholder='Search By Vegetables '
-          //       style={[
-          //         styles.searchInput,
-          //         styles.shadowProp,
-          //         styles.lightElevation,
-          //       ]}
-          //       value={searchQuery}
-          //       onChangeText={setSearchQuery}
-          //     />
-          //   </View>
-          //   // <LinearGradient
-          //   //   colors={['#e6f1d1', '#CEF18C']}
-          //   //   start={{ x: 0, y: 1 }}
-          //   //   end={{ x: 0, y: 0 }}
-          //   // >
-          //   //   {/* <View style={styles.logoContainer}>
-          //   //     <Image style={styles.logo} source={logo} />
-          //   //   </View> */}
-
-          //   // </LinearGradient>
-          // }
-          renderItem={({ item, index }) => (
-            <View
-              style={[
-                styles.itemContainer,
-                styles.shadowProp,
-                styles.elevation,
-              ]}
-            >
-              <View style={[styles.itemHeader]}>
-                <View style={[styles.imageContainer]}>
-                  <Image
-                    style={styles.productImage}
-                    source={{ uri: item?.product?.imageURL }}
-                    onError={(e) =>
-                      console.log('Image loading error:', e.nativeEvent.error)
-                    }
-                  />
-                </View>
-                <LinearGradient
-                  style={styles.gradientContainer}
-                  colors={['#fff', '#FCF0C2']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                >
-                  <View>
-                    <Text style={styles.productName}>
-                      {item?.product?.name}
-                    </Text>
-                    <Text style={styles.averagePrice}>
-                      Average Price{' '}
-                      <Text
-                        style={{
-                          fontWeight: 'bold',
-                        }}
-                      >
-                        {currencyFormatter(
-                          parseFloat(
-                            getAveragePrice(item.marketPrices).toFixed(2)
-                          )
-                        )}
-                      </Text>
-                    </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <DynamicHeader
+          value={scrollY}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size='large' color='#000' />
+          </View>
+        ) : (
+          <Animated.FlatList
+            style={styles.flatList}
+            contentContainerStyle={styles.flatListContent}
+            data={searchData}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: true }
+            )}
+            scrollEventThrottle={16}
+            renderItem={({ item }) => (
+              <View
+                style={[
+                  styles.itemContainer,
+                  styles.shadowProp,
+                  styles.elevation,
+                ]}
+              >
+                <View style={[styles.itemHeader]}>
+                  <View style={[styles.imageContainer]}>
+                    <Image
+                      style={styles.productImage}
+                      source={{ uri: item?.product?.imageURL }}
+                      onError={(e) =>
+                        console.log('Image loading error:', e.nativeEvent.error)
+                      }
+                    />
                   </View>
-                  <TouchableOpacity
-                    style={{ position: 'absolute', right: 5, top: 5 }}
-                    onPress={() => handleLike(index)}
+                  <LinearGradient
+                    style={styles.gradientContainer}
+                    colors={['#fff', '#FCF0C2']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
                   >
-                    <IconHeartFilled color={item.liked ? 'green' : 'white'} />
-                  </TouchableOpacity>
-                </LinearGradient>
-              </View>
-              <View style={styles.marketPricesContainer}>
-                {item.marketPrices.map((marketItem, index) => (
-                  <View
-                    key={index}
-                    style={[styles.marketItem, styles.lightElevation]}
-                  >
-                    <Text style={styles.marketName}>
-                      {marketItem?.marketName}
-                    </Text>
-
-                    <View style={styles.marketNameContainer}>
-                      <View style={styles.priceContainer}>
-                        <Text>Per {item?.product?.baseUnit}</Text>
-                        <Text style={styles.price}>
-                          {currencyFormatter(marketItem?.price)}
-                        </Text>
-                      </View>
-                      {index >= 0 && (
-                        <>
-                          {calculatePercentageChange(
-                            marketItem.previousPrice,
-                            marketItem.price
-                          ) > 0 ? (
-                            <IconTrendingUp size={16} color='green' />
-                          ) : calculatePercentageChange(
-                              marketItem.previousPrice,
-                              marketItem.price
-                            ) === 0 ? (
-                            <IconWaveSquare size={16} color='gray' />
-                          ) : (
-                            <IconTrendingDown size={16} color='red' />
+                    <View>
+                      <Text style={styles.productName}>
+                        {item?.product?.name}
+                      </Text>
+                      <Text style={styles.averagePrice}>
+                        Average Price{' '}
+                        <Text
+                          style={{
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {currencyFormatter(
+                            parseFloat(
+                              getAveragePrice(item.marketPrices).toFixed(2)
+                            )
                           )}
-                          <Text
-                            style={[
-                              styles.percentageChange,
-                              {
-                                color:
-                                  calculatePercentageChange(
-                                    marketItem.previousPrice,
-                                    marketItem.price
-                                  ) > 0
-                                    ? 'green'
-                                    : calculatePercentageChange(
+                        </Text>
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={{ position: 'absolute', right: 5, top: 5 }}
+                      onPress={() => handleLike(item)}
+                    >
+                      <IconHeartFilled
+                        color={isItemLiked(item) ? 'green' : 'white'}
+                      />
+                    </TouchableOpacity>
+                  </LinearGradient>
+                </View>
+                <View style={styles.marketPricesContainer}>
+                  {item.marketPrices.map((marketItem, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[styles.marketItem, styles.lightElevation]}
+                    >
+                      <LinearGradient
+                        style={styles.gradientContainer}
+                        colors={['#E8FFD6', '#F1FFD6']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                      >
+                        <Text style={styles.marketName}>
+                          {marketItem?.marketName}
+                        </Text>
+
+                        <View style={styles.marketNameContainer}>
+                          <View style={styles.priceContainer}>
+                            <Text>Per {item?.product?.baseUnit}</Text>
+                            <Text style={styles.price}>
+                              {currencyFormatter(marketItem?.price)}
+                            </Text>
+                          </View>
+                          {index >= 0 && (
+                            <>
+                              {calculatePercentageChange(
+                                marketItem.previousPrice,
+                                marketItem.price
+                              ) > 0 ? (
+                                <IconTrendingUp size={16} color='green' />
+                              ) : calculatePercentageChange(
+                                  marketItem.previousPrice,
+                                  marketItem.price
+                                ) === 0 ? (
+                                <IconWaveSquare size={16} color='gray' />
+                              ) : (
+                                <IconTrendingDown size={16} color='red' />
+                              )}
+                              <Text
+                                style={[
+                                  styles.percentageChange,
+                                  {
+                                    color:
+                                      calculatePercentageChange(
                                         marketItem.previousPrice,
                                         marketItem.price
-                                      ) === 0
-                                    ? 'gray'
-                                    : 'red',
-                              },
-                            ]}
-                          >
-                            {calculatePercentageChange(
-                              marketItem.previousPrice,
-                              marketItem.price
-                            ).toFixed(2)}
-                            %
-                          </Text>
-                        </>
-                      )}
-                    </View>
-                    <Text style={styles.oldPrice}>
-                      Old Price {currencyFormatter(marketItem?.previousPrice)}
-                    </Text>
-                    <Text style={styles.updatedAt}>
-                      {dateFormatter(marketItem.updatedAt)}
-                    </Text>
-                  </View>
-                ))}
+                                      ) > 0
+                                        ? 'green'
+                                        : calculatePercentageChange(
+                                            marketItem.previousPrice,
+                                            marketItem.price
+                                          ) === 0
+                                        ? 'gray'
+                                        : 'red',
+                                  },
+                                ]}
+                              >
+                                {calculatePercentageChange(
+                                  marketItem.previousPrice,
+                                  marketItem.price
+                                ).toFixed(2)}
+                                %
+                              </Text>
+                            </>
+                          )}
+                        </View>
+                        <Text style={styles.oldPrice}>
+                          Old Price{' '}
+                          {currencyFormatter(marketItem?.previousPrice)}
+                        </Text>
+                        <Text style={styles.updatedAt}>
+                          {dateFormatter(marketItem.updatedAt)}
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-            </View>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.flatListContent}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-        />
-      )}
-      {/* </SafeAreaView> */}
-    </GestureHandlerRootView>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+            showsVerticalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -314,11 +358,24 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: 'row',
-    height: 80,
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 8,
     gap: 4,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    overflow: 'hidden',
+    zIndex: 1000,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 10,
   },
   searchInput: {
     flexGrow: 1,
@@ -328,7 +385,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   flatList: {
+    flex: 1,
     backgroundColor: '#e6f1d1',
+    paddingTop: HEADER_MAX_HEIGHT,
   },
   itemContainer: {
     backgroundColor: 'white',
@@ -347,7 +406,6 @@ const styles = StyleSheet.create({
   },
   elevation: {
     elevation: 20,
-    // shadowColor: '#52006A',
   },
   shadowProp: {
     shadowColor: '#171717',
@@ -382,7 +440,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   marketItem: {
-    padding: 8,
     borderRadius: 6,
     width: '49%',
     marginBottom: 8,
@@ -405,7 +462,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   flatListContent: {
-    paddingBottom: 40,
+    paddingBottom: 190,
   },
   separator: {
     height: 8,
@@ -439,6 +496,10 @@ const styles = StyleSheet.create({
   oldPrice: {
     fontSize: 12,
     color: '#666',
+  },
+  container: {
+    flex: 1,
+    position: 'relative',
   },
 });
 

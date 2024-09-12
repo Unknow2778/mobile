@@ -1,37 +1,70 @@
-import React, { createContext, useContext, ReactNode, useState } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Animated } from 'react-native';
 
-interface AppContextState {
-  // Add your state properties here
-  // For example:
-  // user: User | null;
-  // theme: 'light' | 'dark';
-  scrollY: Animated.Value;
-  setScrollY: (value: Animated.Value) => void;
-}
+type DataItem = {
+  product: {
+    name: string;
+    imageURL: string;
+    baseUnit: string;
+  };
+  marketPrices: Array<{
+    marketName: string;
+    updatedAt: string;
+    price: number;
+    previousPrice: number;
+  }>;
+};
+
+type AppContextState = {
+  likedItems: DataItem[];
+  addLikedItem: (item: DataItem) => void;
+  removeLikedItem: (item: DataItem) => void;
+  isItemLiked: (item: DataItem) => boolean;
+};
 
 const AppContext = createContext<AppContextState | undefined>(undefined);
 
-// Create a provider component
-export function AppProvider({ children }: { children: ReactNode }) {
-  // Add your state management logic here
-  // For example, using useState or useReducer
-  const [scrollY, setScrollY] = useState(new Animated.Value(0));
+export const AppProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [likedItems, setLikedItems] = useState<DataItem[]>([]);
 
-  const value: AppContextState = {
-    // Initialize your state here
-    scrollY,
-    setScrollY,
+  const addLikedItem = (item: DataItem) => {
+    setLikedItems((prevItems) => [...prevItems, item]);
   };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
-}
+  const removeLikedItem = (item: DataItem) => {
+    setLikedItems((prevItems) =>
+      prevItems.filter(
+        (likedItem) => likedItem.product.name !== item.product.name
+      )
+    );
+  };
 
-// Create a custom hook to use the contexts
-export function useAppContext() {
+  const isItemLiked = (item: DataItem) => {
+    return likedItems.some(
+      (likedItem) => likedItem.product.name === item.product.name
+    );
+  };
+
+  return (
+    <AppContext.Provider
+      value={{
+        likedItems,
+        addLikedItem,
+        removeLikedItem,
+        isItemLiked,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
+};
+
+export const useAppContext = () => {
   const context = useContext(AppContext);
   if (context === undefined) {
     throw new Error('useAppContext must be used within an AppProvider');
   }
   return context;
-}
+};
