@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-
 import { currencyFormatter } from '../helperFun/currencyFormatter';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GET } from '../api/api';
@@ -22,18 +21,22 @@ import {
   IconWaveSquare,
   IconHeartFilled,
   IconBell,
+  IconSearch,
 } from '@tabler/icons-react-native';
 import Fuse from 'fuse.js';
 import { useAppContext } from '../appStore/context';
+import { useRouter } from 'expo-router';
 const logo = require('../../assets/images/logo.png');
 
 type DataItem = {
   product: {
+    _id: string;
     name: string;
     imageURL: string;
     baseUnit: string;
   };
   marketPrices: Array<{
+    _id: string;
     marketName: string;
     updatedAt: string;
     price: number;
@@ -95,7 +98,7 @@ const DynamicHeader = ({
       ]}
     >
       <LinearGradient
-        colors={['#CEF18C', '#CEF18C', '#e6f1d1', 'transparent']}
+        colors={['#ECFCCB', '#ECFCCB', '#fff', 'transparent']}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
       >
@@ -111,15 +114,15 @@ const DynamicHeader = ({
           <Image source={logo} style={styles.logo} />
           <IconBell size={24} color='#104515' />
         </Animated.View>
-        <View style={styles.searchContainer}>
+        <View
+          style={[styles.searchContainer, styles.elevation, styles.shadowProp]}
+        >
+          <IconSearch size={24} color='#104515' />
+
           <TextInput
             onChangeText={handleSearch}
             placeholder='Search By Vegetables'
-            style={[
-              styles.searchInput,
-              styles.shadowProp,
-              styles.lightElevation,
-            ]}
+            style={[styles.searchInput]}
           />
         </View>
       </LinearGradient>
@@ -134,13 +137,14 @@ const Home = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const scrollY = useRef(new Animated.Value(0)).current;
   const { addLikedItem, removeLikedItem, isItemLiked } = useAppContext();
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch data here
     const fetachData = async () => {
       setLoading(true);
       const data = await GET('/markets/productPriceInAllMarkets');
-      console.log(data);
+      // console.log(data);
       setDataArray(data.productPrices);
       setSearchData(data.productPrices);
       setLoading(false);
@@ -196,13 +200,7 @@ const Home = () => {
             )}
             scrollEventThrottle={16}
             renderItem={({ item }) => (
-              <View
-                style={[
-                  styles.itemContainer,
-                  styles.shadowProp,
-                  styles.elevation,
-                ]}
-              >
+              <View style={[styles.itemContainer]}>
                 <View style={[styles.itemHeader]}>
                   <View style={[styles.imageContainer]}>
                     <Image
@@ -248,9 +246,19 @@ const Home = () => {
                     </TouchableOpacity>
                   </LinearGradient>
                 </View>
-                <View style={styles.marketPricesContainer}>
+                <View style={[styles.marketPricesContainer]}>
                   {item.marketPrices.map((marketItem, index) => (
                     <TouchableOpacity
+                      onPress={() => {
+                        router.push({
+                          pathname: '/[market]',
+                          params: {
+                            market: marketItem.marketName,
+                            productId: item.product._id,
+                            marketId: marketItem._id,
+                          },
+                        });
+                      }}
                       key={index}
                       style={[styles.marketItem, styles.lightElevation]}
                     >
@@ -342,7 +350,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   safeArea: {
-    backgroundColor: '#CEF18C',
+    backgroundColor: '#ECFCCB',
     minHeight: '100%',
   },
   logoContainer: {
@@ -383,10 +391,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 48,
     backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   flatList: {
     flex: 1,
-    backgroundColor: '#e6f1d1',
+    backgroundColor: '#fff',
     paddingTop: HEADER_MAX_HEIGHT,
   },
   itemContainer: {
@@ -396,6 +406,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     width: 'auto',
     marginHorizontal: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   itemHeader: {
     paddingVertical: 4,
@@ -444,9 +456,11 @@ const styles = StyleSheet.create({
     width: '49%',
     marginBottom: 8,
     backgroundColor: '#F9FFE7',
+    borderWidth: 1,
+    borderColor: '#ECFCCB',
   },
   lightElevation: {
-    elevation: 5,
+    elevation: 1,
   },
   updatedAt: {
     fontSize: 10,

@@ -1,8 +1,7 @@
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import React, { useRef, useEffect } from 'react';
 import LottieView from 'lottie-react-native';
-
-const { width, height } = Dimensions.get('window');
+import comingsoon from '../../assets/lottie/coming.json';
 
 const News = () => {
   const animationRef = useRef<LottieView>(null);
@@ -15,22 +14,29 @@ const News = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Comming soon</Text>
+      <View style={styles.animationContainer}>
+        <LottieView
+          autoPlay
+          ref={animationRef}
+          style={{
+            width: 200,
+            height: 200,
+          }}
+          source={comingsoon}
+        />
+      </View>
     </View>
   );
 };
 
-// export default News;
+export default News;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: {},
+  animationContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  animation: {
-    width: width * 0.8, // Set a specific width relative to the screen
-    height: width * 0.8, // Set the height proportionally
+    height: '100%',
+    width: '100%',
   },
 });

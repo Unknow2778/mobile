@@ -19,6 +19,7 @@ import {
   IconWaveSquare,
 } from '@tabler/icons-react-native';
 import LottieView from 'lottie-react-native';
+import { router } from 'expo-router';
 
 const LikedScreen = () => {
   const { likedItems, removeLikedItem } = useAppContext();
@@ -75,7 +76,20 @@ const LikedScreen = () => {
       </View>
       <View style={styles.marketPricesContainer}>
         {item.marketPrices.map((marketItem: any, index: number) => (
-          <View key={index} style={[styles.marketItem, styles.lightElevation]}>
+          <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: '/[market]',
+                params: {
+                  market: marketItem.marketName,
+                  productId: item.product._id,
+                  marketId: marketItem._id,
+                },
+              });
+            }}
+            key={index}
+            style={[styles.marketItem, styles.lightElevation]}
+          >
             <LinearGradient
               style={styles.gradientContainer}
               colors={['#E8FFD6', '#F1FFD6']}
@@ -140,7 +154,7 @@ const LikedScreen = () => {
                 {dateFormatter(marketItem.updatedAt)}
               </Text>
             </LinearGradient>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </View>
@@ -158,9 +172,7 @@ const LikedScreen = () => {
       ) : (
         <View style={styles.emptyContainer}>
           <LottieView
-            source={{
-              uri: 'https://lottie.host/171404d8-2ab7-4438-b4a2-8e78398fccc4/W606pEl5vy.json',
-            }}
+            source={require('../../assets/lottie/empty.json')}
             autoPlay
             loop
             style={{ width: 200, height: 200 }}
@@ -175,7 +187,6 @@ const LikedScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e6f1d1',
   },
   listContent: {
     padding: 10,
@@ -229,12 +240,12 @@ const styles = StyleSheet.create({
   },
   shadowProp: {
     shadowColor: '#171717',
-    shadowOffset: { width: -2, height: 4 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowRadius: 1,
   },
   elevation: {
-    elevation: 5,
+    elevation: 1,
   },
   marketPricesContainer: {
     padding: 4,
@@ -245,11 +256,11 @@ const styles = StyleSheet.create({
   marketItem: {
     borderRadius: 6,
     width: '49%',
-    marginBottom: 8,
+    marginBottom: 4,
     backgroundColor: '#F9FFE7',
   },
   lightElevation: {
-    elevation: 5,
+    elevation: 1,
   },
   marketName: {
     fontSize: 14,

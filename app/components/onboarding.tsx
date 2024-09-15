@@ -14,6 +14,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Paginator from './Paginator';
 import NextButton from './NextButton';
 import LottieView from 'lottie-react-native';
+import tractor from '../../assets/lottie/tractor.json';
+import data from '../../assets/lottie/data.json';
 
 const { width, height } = Dimensions.get('window');
 
@@ -34,15 +36,13 @@ const OnboardingScreen = ({
       title: 'Welcome to FramPrice24!',
       description:
         'We provide a platform where you can view the latest prices for farming-related products.',
-      lottie:
-        'https://lottie.host/3dedc76f-b391-4935-9a76-19ab3af5843d/U5qFc8Q0dN.json',
+      lottie: tractor,
     },
     {
       title: 'Real-Time Price Updates',
       description:
         'We continuously analyze and update prices for farming-related products, providing accurate information for every region, every day.',
-      lottie:
-        'https://lottie.host/63c7182d-dd0f-4835-85e2-3d4bc4ba2680/NNilciUfXq.json',
+      lottie: data,
     },
     {
       title: 'Disclaimer',
@@ -89,9 +89,7 @@ const OnboardingScreen = ({
           width: 200,
           height: 200,
         }}
-        source={{
-          uri: item.lottie,
-        }}
+        source={item.lottie}
       />
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.description}>{item.description}</Text>

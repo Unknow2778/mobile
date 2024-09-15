@@ -7,6 +7,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  StatusBar,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -82,6 +83,7 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle='dark-content' backgroundColor='transparent' />
       <View style={styles.loginContainer}>
         <View style={styles.avatarContainer}>
           <Image
@@ -93,7 +95,11 @@ const Profile = () => {
         <View style={styles.profileContainer}>
           <View style={styles.profileItem}>
             <Text style={styles.label}>Name </Text>
-            <Text style={styles.value}>{userName ? userName : ''} </Text>
+            <Text
+              style={[styles.value, { color: userName ? 'black' : 'gray' }]}
+            >
+              {userName ? userName : 'Unknown'}
+            </Text>
           </View>
           <View style={styles.profileItem}>
             <Text style={styles.label}>Email </Text>
@@ -196,7 +202,6 @@ export default Profile;
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#e6f1d1',
     flex: 1,
     padding: 10,
     gap: 10,
