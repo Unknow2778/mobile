@@ -2,11 +2,8 @@ import { Tabs } from 'expo-router';
 import {
   IconCarrot,
   IconNews,
-  IconCategory2,
+  IconBasketPin,
   IconUser,
-  IconColumns,
-  IconWaveSquare,
-  IconHeartFilled,
 } from '@tabler/icons-react-native';
 import { StatusBar, View } from 'react-native';
 
@@ -21,11 +18,7 @@ export default function TabLayout() {
           tabBarStyle: {
             backgroundColor: '#fff',
             position: 'absolute',
-            bottom: 10,
-            left: 10,
-            right: 10,
-            elevation: 1,
-            borderRadius: 15,
+
             height: 55,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
@@ -54,12 +47,12 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name='liked'
+          name='markets'
           options={{
-            title: 'Liked',
+            title: 'Markets',
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <IconHeartFilled color={color} size={24} strokeWidth={1.5} />
+              <IconBasketPin color={color} size={24} strokeWidth={1.5} />
             ),
           }}
         />

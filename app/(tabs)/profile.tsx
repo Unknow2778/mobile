@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { POST } from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IconX } from '@tabler/icons-react-native';
+import { useAppContext } from '../appStore/context';
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -25,6 +26,7 @@ const Profile = () => {
   const [phone, setPhone] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const { language, setLanguage } = useAppContext();
 
   useEffect(() => {
     AsyncStorage.getItem('name').then((storedName) => {
@@ -129,6 +131,25 @@ const Profile = () => {
           onPress={handleLoginLogout}
         >
           <Text style={styles.logoutText}>{userName ? 'Logout' : 'Login'}</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.languageContainer}>
+        <Text>Language</Text>
+        <TouchableOpacity
+          onPress={() => {
+            AsyncStorage.setItem('lang', 'en');
+            setLanguage('en');
+          }}
+        >
+          <Text>English</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            AsyncStorage.setItem('lang', 'kn');
+            setLanguage('kn');
+          }}
+        >
+          <Text>Kannada</Text>
         </TouchableOpacity>
       </View>
 
@@ -329,5 +350,11 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
     textAlign: 'center',
+  },
+  languageContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 10,
   },
 });

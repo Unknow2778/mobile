@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import React from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import ProductDataByMarket from './components/ProductDataByMarket';
+import ProductDataByMarket from '../components/ProductDataByMarket';
 
 const MarketScreen = () => {
   const { market, productId, marketId } = useLocalSearchParams<{
@@ -17,10 +17,14 @@ const MarketScreen = () => {
           title: market || 'Market Screen',
           headerShown: true,
           headerTitleStyle: {
-            color: 'black',
+            color: '#fff',
+            fontSize: 20,
+            fontWeight: 'bold',
           },
+          headerTintColor: '#fff',
+          headerTitleAlign: 'center',
           headerStyle: {
-            backgroundColor: '#fff',
+            backgroundColor: '#16A349',
           },
           headerShadowVisible: false,
         }}

@@ -16,10 +16,8 @@ type DataItem = {
 };
 
 type AppContextState = {
-  likedItems: DataItem[];
-  addLikedItem: (item: DataItem) => void;
-  removeLikedItem: (item: DataItem) => void;
-  isItemLiked: (item: DataItem) => boolean;
+  language: string | null;
+  setLanguage: (language: string | null) => void;
 };
 
 const AppContext = createContext<AppContextState | undefined>(undefined);
@@ -27,33 +25,13 @@ const AppContext = createContext<AppContextState | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [likedItems, setLikedItems] = useState<DataItem[]>([]);
-
-  const addLikedItem = (item: DataItem) => {
-    setLikedItems((prevItems) => [...prevItems, item]);
-  };
-
-  const removeLikedItem = (item: DataItem) => {
-    setLikedItems((prevItems) =>
-      prevItems.filter(
-        (likedItem) => likedItem.product.name !== item.product.name
-      )
-    );
-  };
-
-  const isItemLiked = (item: DataItem) => {
-    return likedItems.some(
-      (likedItem) => likedItem.product.name === item.product.name
-    );
-  };
+  const [language, setLanguage] = useState<string | null>(null);
 
   return (
     <AppContext.Provider
       value={{
-        likedItems,
-        addLikedItem,
-        removeLikedItem,
-        isItemLiked,
+        language,
+        setLanguage,
       }}
     >
       {children}

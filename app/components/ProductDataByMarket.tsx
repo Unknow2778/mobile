@@ -76,9 +76,6 @@ const ProductDataByMarket = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(null);
-  const [featurePrediction, setFeaturePrediction] = useState<number | null>(
-    null
-  );
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -371,7 +368,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     height: '100%',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F0FDF4',
   },
   imageContainer: {
     flexDirection: 'row',

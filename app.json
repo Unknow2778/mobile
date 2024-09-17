@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "farm price 24",
-    "slug": "beg",
+    "name": "Farm Price 24",
+    "slug": "farmprice24",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.unknown2778.beg"
+      "package": "com.farmprice24.farmprice24"
     },
     "web": {
       "bundler": "metro",
