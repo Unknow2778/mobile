@@ -32,7 +32,9 @@ const News = () => {
 export default News;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: '#F0FDF4',
+  },
   animationContainer: {
     justifyContent: 'center',
     alignItems: 'center',

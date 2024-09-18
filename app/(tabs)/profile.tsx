@@ -9,6 +9,7 @@ import {
   Alert,
   StatusBar,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { POST } from '../api/api';
@@ -83,6 +84,11 @@ const Profile = () => {
     }
   };
 
+  const handleLanguageChange = (lang: string) => {
+    AsyncStorage.setItem('lang', lang);
+    setLanguage(lang);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle='dark-content' backgroundColor='transparent' />
@@ -103,18 +109,18 @@ const Profile = () => {
               {userName ? userName : 'Unknown'}
             </Text>
           </View>
-          <View style={styles.profileItem}>
+          {/* <View style={styles.profileItem}>
             <Text style={styles.label}>Email </Text>
             <Text style={[styles.value, { color: email ? 'black' : 'gray' }]}>
               {email ? email : 'verify your email'}
             </Text>
-          </View>
-          <View style={styles.profileItem}>
+          </View> */}
+          {/* <View style={styles.profileItem}>
             <Text style={styles.label}>Phone </Text>
             <Text style={[styles.value, { color: phone ? 'black' : 'gray' }]}>
               {phone ? phone : 'verify your phone'}
             </Text>
-          </View>
+          </View> */}
         </View>
       </View>
       <View style={styles.logoutContainer}>
@@ -126,7 +132,7 @@ const Profile = () => {
         <TouchableOpacity
           style={[
             styles.logoutButton,
-            { backgroundColor: userName !== null ? '#DB3A3A' : '#91D50F' },
+            { backgroundColor: userName !== null ? '#DB3A3A' : '#16A34A' },
           ]}
           onPress={handleLoginLogout}
         >
@@ -134,23 +140,17 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.languageContainer}>
-        <Text>Language</Text>
-        <TouchableOpacity
-          onPress={() => {
-            AsyncStorage.setItem('lang', 'en');
-            setLanguage('en');
-          }}
-        >
-          <Text>English</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            AsyncStorage.setItem('lang', 'kn');
-            setLanguage('kn');
-          }}
-        >
-          <Text>Kannada</Text>
-        </TouchableOpacity>
+        <Text style={styles.languageLabel}>Language</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={language ?? 'en'}
+            onValueChange={handleLanguageChange}
+            style={styles.picker}
+          >
+            <Picker.Item label='English' value='en' />
+            <Picker.Item label='ಕನ್ನಡ (Kannada)' value='kn' />
+          </Picker>
+        </View>
       </View>
 
       <Modal
@@ -226,13 +226,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     gap: 10,
+    backgroundColor: '#F0FDF4',
   },
   loginContainer: {
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   profileContainer: {
     justifyContent: 'flex-start',
@@ -260,8 +263,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   avatar: {
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
     borderRadius: 50,
   },
   logoutContainer: {
@@ -352,9 +355,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   languageContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  languageLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
   },
 });

@@ -38,6 +38,8 @@ const DynamicHeader = ({
   searchQuery: string;
   setSearchQuery: (query: string) => void;
 }) => {
+  const { t, language } = useAppContext();
+
   const headerTranslateY = value.interpolate({
     inputRange: [0, SCROLL_DISTANCE],
     outputRange: [0, -SCROLL_DISTANCE / 2],
@@ -77,19 +79,25 @@ const DynamicHeader = ({
             <View style={styles.logoImageContainer}>
               <Image source={logo} style={styles.logo} />
             </View>
-            <Text style={styles.logoText}>Farm Price 24</Text>
+            <Text style={styles.logoText}>{t('appName')}</Text>
           </View>
           <IconBell size={24} color='#fff' />
         </Animated.View>
       </View>
-      <View style={[styles.searchContainer]}>
-        <IconSearch style={{ marginLeft: 10 }} size={24} color='#104515' />
-        <TextInput
-          onChangeText={handleSearch}
-          placeholder='Search By Vegetables'
-          style={[styles.searchInput]}
-        />
-      </View>
+      <LinearGradient
+        colors={['#F0FDF4', '#F0FDF4', 'transparent']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      >
+        <View style={[styles.searchContainer]}>
+          <IconSearch style={{ marginLeft: 10 }} size={24} color='#104515' />
+          <TextInput
+            onChangeText={handleSearch}
+            placeholder={t('searchByVegetables')}
+            style={[styles.searchInput]}
+          />
+        </View>
+      </LinearGradient>
     </Animated.View>
   );
 };
@@ -262,7 +270,6 @@ const styles = StyleSheet.create({
     right: 0,
     overflow: 'hidden',
     zIndex: 1000,
-    backgroundColor: '#F0FDF4',
   },
   searchInput: {
     flexGrow: 1,

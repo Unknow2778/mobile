@@ -188,7 +188,11 @@ const ProductDataByMarket = ({
       } else if (date.toDateString() === yesterday.toDateString()) {
         dayLabel = 'Yesterday';
       } else {
-        dayLabel = date.toLocaleDateString('en-US', { weekday: 'short' });
+        dayLabel = date.toLocaleDateString('en-US', {
+          month: '2-digit',
+          day: '2-digit',
+          year: 'numeric',
+        });
       }
 
       return {
@@ -208,10 +212,9 @@ const ProductDataByMarket = ({
       const date = new Date(price.date);
       return {
         fullDate: date.toLocaleDateString('en-US', {
-          weekday: 'long',
+          month: '2-digit',
+          day: '2-digit',
           year: 'numeric',
-          month: 'long',
-          day: 'numeric',
         }),
         time: date.toLocaleTimeString('en-US', {
           hour: '2-digit',
@@ -278,7 +281,7 @@ const ProductDataByMarket = ({
       {productData && productData.product && (
         <LinearGradient
           style={[styles.imageContainer, styles.shadow]}
-          colors={['#fff', '#FEF3C7']}
+          colors={['#fff', '#fff']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
@@ -321,13 +324,13 @@ const ProductDataByMarket = ({
               roundedBottom={false}
               xAxisThickness={0}
               yAxisThickness={0}
-              yAxisTextStyle={{ color: '#333' }}
+              yAxisTextStyle={{ color: 'transparent' }}
               xAxisLabelTextStyle={styles.xAxisLabel}
               noOfSections={5}
               maxValue={maxPrice + 10}
               barWidth={25}
-              spacing={15}
-              initialSpacing={10}
+              spacing={50}
+              initialSpacing={20}
               animationDuration={300}
               isAnimated={true}
               focusBarOnPress={true}
@@ -336,10 +339,11 @@ const ProductDataByMarket = ({
               }}
               showValuesAsTopLabel={false}
               onPress={handleBarPress}
+              hideYAxisText={true}
             />
             <View style={styles.timeContainer}>
               {selectedBarIndex !== null ? (
-                <View>
+                <View style={styles.selectedDateContainer}>
                   <Text style={styles.selectedDateText}>
                     {timeData[selectedBarIndex].fullDate}
                   </Text>
@@ -371,6 +375,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0FDF4',
   },
   imageContainer: {
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     flexDirection: 'row',
     backgroundColor: '#fff',
     width: 'auto',
@@ -398,6 +404,14 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  selectedDateContainer: {
+    flexDirection: 'row', // Keep it in row
+    justifyContent: 'center', // Center horizontally
+    alignItems: 'center', // Center vertically
+    width: '100%', // Take full width of parent
   },
   topLabel: {
     color: 'black',
@@ -437,14 +451,15 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize: 14,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 5,
+    textAlign: 'right', // Align text to right
+    marginRight: 5, // Add some space between date and time
   },
   selectedTimeText: {
     color: '#333',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'left', // Align text to left
+    marginLeft: 5, // Add some space between date and time
   },
   instructionText: {
     color: '#666',

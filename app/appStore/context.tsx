@@ -1,23 +1,26 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Animated } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from 'react';
+import { I18n } from 'i18n-js';
 
-type DataItem = {
-  product: {
-    name: string;
-    imageURL: string;
-    baseUnit: string;
-  };
-  marketPrices: Array<{
-    marketName: string;
-    updatedAt: string;
-    price: number;
-    previousPrice: number;
-  }>;
+const i18n = new I18n();
+
+i18n.translations = {
+  en: require('../translation/en.json'),
+  kn: require('../translation/kn.json'),
 };
+
+i18n.enableFallback = true;
 
 type AppContextState = {
   language: string | null;
   setLanguage: (language: string | null) => void;
+  t: (key: string) => string;
 };
 
 const AppContext = createContext<AppContextState | undefined>(undefined);
@@ -27,11 +30,33 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [language, setLanguage] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchLanguage = async () => {
+      const storedLang = await AsyncStorage.getItem('lang');
+      if (storedLang) {
+        setLanguage(storedLang);
+      }
+    };
+    fetchLanguage();
+  }, []);
+
+  useEffect(() => {
+    if (language) {
+      i18n.locale = language;
+    }
+  }, [language]);
+
   return (
     <AppContext.Provider
       value={{
         language,
-        setLanguage,
+        setLanguage: (lang: string | null) => {
+          if (lang) {
+            AsyncStorage.setItem('lang', lang);
+          }
+          setLanguage(lang);
+        },
+        t: (key: string) => i18n.t(key),
       }}
     >
       {children}

@@ -5,17 +5,14 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import ProductDataByMarket from '../components/ProductDataByMarket';
 import { GET } from '../api/api';
-import { LinearGradient } from 'expo-linear-gradient';
 import { currencyFormatter } from '../helperFun/currencyFormatter';
-import { MaterialIcons } from '@expo/vector-icons';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react-native';
 import { dateFormatter } from '../helperFun/dateFormatter';
+import { useAppContext } from '../appStore/context';
 
 const ProductScreen = () => {
   const { product, productId } = useLocalSearchParams<{
@@ -25,6 +22,10 @@ const ProductScreen = () => {
   const [productData, setProductData] = useState<any>(null);
   const [marketPrices, setMarketPrices] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [averagePrice, setAveragePrice] = useState(0);
+  const [highestPrice, setHighestPrice] = useState(0);
+  const [lowestPrice, setLowestPrice] = useState(Infinity);
+  const { t, language } = useAppContext();
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -53,12 +54,23 @@ const ProductScreen = () => {
     return (change / previousPrice) * 100;
   };
 
-  const getAveragePrice = (prices: any) => {
-    const totalPrice = prices?.reduce((acc: any, curr: any) => {
-      return acc + curr?.price;
-    }, 0);
-    return totalPrice / prices?.length;
-  };
+  useEffect(() => {
+    const getAveragePrice = (prices: any) => {
+      const totalPrice = prices?.reduce((acc: any, curr: any) => {
+        return acc + curr?.price;
+      }, 0);
+      setAveragePrice(totalPrice / prices?.length);
+    };
+    getAveragePrice(marketPrices);
+  }, [marketPrices]);
+
+  useEffect(() => {
+    if (marketPrices) {
+      const prices = marketPrices.map((item: any) => item.price);
+      setHighestPrice(Math.max(...prices));
+      setLowestPrice(Math.min(...prices));
+    }
+  }, [marketPrices]);
 
   const renderSkeletonLoader = () => (
     <>
@@ -116,8 +128,7 @@ const ProductScreen = () => {
               <View style={styles?.productDetails}>
                 <Text style={styles?.productName}>{productData?.name}</Text>
                 <Text style={styles?.productUnit}>
-                  Average Price{' '}
-                  {currencyFormatter(getAveragePrice(marketPrices))}
+                  {t('averagePrice')} {currencyFormatter(averagePrice)}
                   {'/'}
                   {productData?.baseUnit}
                 </Text>
@@ -143,11 +154,27 @@ const ProductScreen = () => {
                 >
                   <View style={styles.marketInfo}>
                     <Text style={styles.marketName}>{item.market.place}</Text>
-                    <MaterialIcons
-                      name='chevron-right'
-                      size={24}
-                      color='#888'
-                    />
+                    <View
+                      style={[
+                        styles.bageContainer,
+                        {
+                          backgroundColor:
+                            item.price === highestPrice
+                              ? '#DC2626'
+                              : item.price === lowestPrice
+                              ? '#16A349'
+                              : '#EAB308',
+                        },
+                      ]}
+                    >
+                      <Text style={styles.bageText}>
+                        {item.price === highestPrice
+                          ? t('highest')
+                          : item.price === lowestPrice
+                          ? t('lowest')
+                          : t('normal')}
+                      </Text>
+                    </View>
                   </View>
                   <View style={styles.priceContainer}>
                     <Text style={styles.currentPrice}>
@@ -156,61 +183,59 @@ const ProductScreen = () => {
                     <Text style={styles.priceTitle}>
                       /{productData?.baseUnit}
                     </Text>
-                  </View>
-                  <View style={styles.marketInfo}>
-                    {getPriceChangePercentage(
-                      item.price,
-                      item.previousPrice
-                    ) === 0 ? null : getPriceChangePercentage(
-                        item.price,
-                        item.previousPrice
-                      ) > 0 ? (
-                      <IconTrendingUp size={24} color={'#22C55E'} />
-                    ) : (
-                      <IconTrendingDown size={24} color={'#F43F5E'} />
-                    )}
-                    <Text
-                      style={[
-                        styles.priceChange,
-                        {
-                          color:
-                            getPriceChangePercentage(
-                              item.price,
-                              item.previousPrice
-                            ) === 0
-                              ? '#888'
-                              : getPriceChangePercentage(
-                                  item.price,
-                                  item.previousPrice
-                                ) > 0
-                              ? '#22C55E'
-                              : '#F43F5E',
-                        },
-                      ]}
-                    >
+                    <View style={styles.marketInfo}>
                       {getPriceChangePercentage(
                         item.price,
                         item.previousPrice
-                      ) === 0
-                        ? 'No Change'
-                        : `${getPriceChangePercentage(
-                            item.price,
-                            item.previousPrice
-                          ).toFixed(2)}%`}
-                    </Text>
+                      ) === 0 ? null : getPriceChangePercentage(
+                          item.price,
+                          item.previousPrice
+                        ) > 0 ? (
+                        <IconTrendingUp size={24} color={'#22C55E'} />
+                      ) : (
+                        <IconTrendingDown size={24} color={'#F43F5E'} />
+                      )}
+                      <Text
+                        style={[
+                          styles.priceChange,
+                          {
+                            color:
+                              getPriceChangePercentage(
+                                item.price,
+                                item.previousPrice
+                              ) === 0
+                                ? '#888'
+                                : getPriceChangePercentage(
+                                    item.price,
+                                    item.previousPrice
+                                  ) > 0
+                                ? '#22C55E'
+                                : '#F43F5E',
+                          },
+                        ]}
+                      >
+                        {getPriceChangePercentage(
+                          item.price,
+                          item.previousPrice
+                        ) === 0
+                          ? t('noChange')
+                          : `${getPriceChangePercentage(
+                              item.price,
+                              item.previousPrice
+                            ).toFixed(2)}%`}
+                      </Text>
+                    </View>
                   </View>
+
                   <Text style={styles.marketInfo}>
                     {dateFormatter(item.updatedAt)}
                   </Text>
                 </TouchableOpacity>
               )}
-              numColumns={2}
-              horizontal={false}
               keyExtractor={(item, index) =>
                 `market-${item.market.id}-${index}`
               }
               contentContainerStyle={styles.marketList}
-              columnWrapperStyle={styles.row}
             />
           </>
         )}
@@ -251,7 +276,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 12,
-    margin: 5,
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
@@ -358,16 +382,26 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   skeletonMarketList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     justifyContent: 'space-between',
+    gap: 10,
+    height: '80%',
   },
   skeletonMarketItem: {
-    width: '48%',
+    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 10,
+  },
+  bageContainer: {
+    padding: 5,
+    borderRadius: 5,
+  },
+  bageText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#fff',
   },
 });
 

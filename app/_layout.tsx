@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { NativeWindStyleSheet } from 'nativewind';
 import { Stack, useRouter } from 'expo-router';
 import { AppProvider } from './appStore/context';
