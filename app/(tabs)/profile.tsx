@@ -27,11 +27,16 @@ const Profile = () => {
   const [phone, setPhone] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const { language, setLanguage } = useAppContext();
+  const { language, setLanguage, t } = useAppContext();
+  const [, forceUpdate] = useState({});
 
   useEffect(() => {
     AsyncStorage.getItem('name').then((storedName) => {
       if (storedName) setUserName(storedName);
+    });
+
+    AsyncStorage.getItem('lang').then((storedLang) => {
+      if (storedLang) setLanguage(storedLang);
     });
   }, []);
 
@@ -66,7 +71,6 @@ const Profile = () => {
     } else {
       setErrorMessage(result.error);
       Alert.alert('Registration Failed', result.error);
-      console.log(result);
     }
   };
 
@@ -76,6 +80,8 @@ const Profile = () => {
       AsyncStorage.removeItem('name');
       AsyncStorage.removeItem('email');
       AsyncStorage.removeItem('phone');
+      AsyncStorage.removeItem('lang');
+      AsyncStorage.removeItem('hasSeenOnboarding');
       setUserName(null);
       setEmail('');
       setPhone('');
@@ -85,8 +91,10 @@ const Profile = () => {
   };
 
   const handleLanguageChange = (lang: string) => {
-    AsyncStorage.setItem('lang', lang);
     setLanguage(lang);
+    AsyncStorage.setItem('lang', lang).then(() => {
+      forceUpdate({}); // Force a re-render
+    });
   };
 
   return (
@@ -102,11 +110,11 @@ const Profile = () => {
 
         <View style={styles.profileContainer}>
           <View style={styles.profileItem}>
-            <Text style={styles.label}>Name </Text>
+            <Text style={styles.label}>{t('name')} </Text>
             <Text
               style={[styles.value, { color: userName ? 'black' : 'gray' }]}
             >
-              {userName ? userName : 'Unknown'}
+              {userName ? userName : t('unverified')}
             </Text>
           </View>
           {/* <View style={styles.profileItem}>
@@ -125,9 +133,10 @@ const Profile = () => {
       </View>
       <View style={styles.logoutContainer}>
         {userName !== null ? (
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.logoutText}>Edit</Text>
-          </TouchableOpacity>
+          // <TouchableOpacity style={styles.editButton}>
+          //   <Text style={styles.logoutText}>Edit</Text>
+          // </TouchableOpacity>
+          <></>
         ) : null}
         <TouchableOpacity
           style={[
@@ -136,11 +145,13 @@ const Profile = () => {
           ]}
           onPress={handleLoginLogout}
         >
-          <Text style={styles.logoutText}>{userName ? 'Logout' : 'Login'}</Text>
+          <Text style={styles.logoutText}>
+            {userName ? t('logout') : t('login')}
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.languageContainer}>
-        <Text style={styles.languageLabel}>Language</Text>
+        <Text style={styles.languageLabel}>{t('language')}</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={language ?? 'en'}
@@ -169,19 +180,19 @@ const Profile = () => {
                 <IconX size={20} color='black' />
               </TouchableOpacity>
             </View>
-            <Text style={styles.modalTitle}>Login</Text>
+            <Text style={styles.modalTitle}>{t('login')}</Text>
             {errorMessage ? (
               <Text style={styles.errorText}>{errorMessage}</Text>
             ) : null}
             <TextInput
               style={styles.input}
-              placeholder='Name'
+              placeholder={t('name')}
               value={name}
               onChangeText={setName}
             />
             <TextInput
               style={styles.input}
-              placeholder='Password'
+              placeholder={t('password')}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -189,7 +200,7 @@ const Profile = () => {
             {!isLoggedIn && (
               <TextInput
                 style={styles.input}
-                placeholder='Confirm Password'
+                placeholder={t('confirmPassword')}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry
@@ -201,7 +212,7 @@ const Profile = () => {
               onPress={isLoggedIn ? handleLogin : handleRegister}
             >
               <Text style={styles.loginButtonText}>
-                {isLoggedIn ? 'Login' : 'Register'}
+                {isLoggedIn ? t('login') : t('register')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -209,7 +220,7 @@ const Profile = () => {
               onPress={() => setIsLoggedIn(!isLoggedIn)}
             >
               <Text style={styles.registerButtonText}>
-                {isLoggedIn ? 'Register' : 'Login'}
+                {isLoggedIn ? t('register') : t('login')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -279,7 +290,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   editButton: {
-    backgroundColor: '#91D50F',
+    backgroundColor: '#16A34A',
     padding: 10,
     borderRadius: 10,
     flex: 1,
@@ -316,7 +327,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   loginButton: {
-    backgroundColor: '#91D50F',
+    backgroundColor: '#16A34A',
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
@@ -335,6 +346,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
+    color: '#16A34A',
   },
   registerButtonText: {
     color: 'green',

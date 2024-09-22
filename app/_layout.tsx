@@ -14,11 +14,13 @@ import {
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'react-native';
+import { IconWorld } from '@tabler/icons-react-native';
 
 const RootLayout = () => {
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [language, setLanguage] = useState('en');
 
   useEffect(() => {
     const checkOnboardingAndLanguage = async () => {
@@ -35,6 +37,7 @@ const RootLayout = () => {
 
   const selectLanguage = async (lang: string) => {
     await AsyncStorage.setItem('lang', lang);
+    setLanguage(lang);
     setShowLanguageModal(false);
   };
 
@@ -53,7 +56,10 @@ const RootLayout = () => {
           <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
         </Stack>
       ) : (
-        <OnboardingScreen setHasSeenOnboarding={setHasSeenOnboarding} />
+        <OnboardingScreen
+          setHasSeenOnboarding={setHasSeenOnboarding}
+          language={language}
+        />
       )}
 
       <Modal
@@ -72,11 +78,25 @@ const RootLayout = () => {
           <View
             style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}
           >
-            <Text
-              style={{ fontSize: 18, marginBottom: 20, fontWeight: 'bold' }}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 20,
+              }}
             >
-              Select your language
-            </Text>
+              <IconWorld size={24} color='green' />
+              <Text
+                style={{
+                  fontSize: 18,
+                  marginLeft: 10,
+                  fontWeight: 'bold',
+                }}
+              >
+                Select your language
+              </Text>
+            </View>
             <View
               style={{ flexDirection: 'row', justifyContent: 'space-between' }}
             >
@@ -86,14 +106,19 @@ const RootLayout = () => {
                   onPress={() => selectLanguage(lang)}
                   style={{
                     padding: 10,
-                    borderWidth: 1,
-                    borderColor: 'gray',
                     borderRadius: 5,
+                    backgroundColor: '#F1F5F9',
                     flex: 1,
                     marginHorizontal: 5,
                   }}
                 >
-                  <Text style={{ fontSize: 16, textAlign: 'center' }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      textAlign: 'center',
+                      fontWeight: 'bold',
+                    }}
+                  >
                     {lang === 'en' ? 'English' : 'ಕನ್ನಡ'}
                   </Text>
                 </TouchableOpacity>

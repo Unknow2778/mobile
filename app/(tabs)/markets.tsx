@@ -7,6 +7,9 @@ import { currencyFormatter } from '../helperFun/currencyFormatter';
 import { LinearGradient } from 'expo-linear-gradient';
 import { IconMapPin } from '@tabler/icons-react-native';
 import { useAppContext } from '../appStore/context';
+import LottieView from 'lottie-react-native';
+import { useRef } from 'react';
+import fire from '../../assets/lottie/fire.json';
 
 interface Product {
   _id: string;
@@ -32,6 +35,7 @@ const Markets = () => {
   const [markets, setMarkets] = useState<Market[]>([]);
   const [loading, setLoading] = useState(true);
   const { language, t } = useAppContext();
+  const animation = useRef<LottieView | null>(null);
 
   useEffect(() => {
     const fetchMarkets = async () => {
@@ -105,9 +109,24 @@ const Markets = () => {
                         <Text style={styles.productDate}>
                           {formatDate(item.date)}
                         </Text>
-                        <Text style={styles.productPrice}>
-                          {currencyFormatter(item.currentPrice)}
-                        </Text>
+                        <View style={styles.productPrice}>
+                          {item.product.isInDemand && (
+                            <View style={styles.fireIconContainer}>
+                              <LottieView
+                                autoPlay
+                                ref={animation}
+                                style={{
+                                  width: 20,
+                                  height: 20,
+                                }}
+                                source={fire}
+                              />
+                            </View>
+                          )}
+                          <Text style={styles.productPriceText}>
+                            {currencyFormatter(item.currentPrice)}
+                          </Text>
+                        </View>
                       </View>
                     )}
                     keyExtractor={(product, index) =>
@@ -165,13 +184,12 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E7EB',
     paddingBottom: 5,
     marginBottom: 5,
-    gap: 10,
+    justifyContent: 'space-between',
   },
   productRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 2,
-    gap: 10,
     justifyContent: 'space-between',
   },
   headerImg: {
@@ -181,22 +199,27 @@ const styles = StyleSheet.create({
   separator: {
     height: 10,
   },
+  fireIconContainer: {
+    marginBottom: 5,
+  },
   productImageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '40%',
+    flex: 1,
   },
   headerProduct: {
-    width: '40%',
     fontWeight: 'bold',
+    flex: 1,
   },
   headerDate: {
-    width: '40%',
     fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'center',
   },
   headerPrice: {
-    width: '15%',
     fontWeight: 'bold',
+    width: 80,
+    textAlign: 'right',
   },
   productImage: {
     width: 20,
@@ -205,14 +228,20 @@ const styles = StyleSheet.create({
   },
   productName: {
     textTransform: 'capitalize',
+    flex: 1,
   },
-
   productDate: {
-    width: '40%',
+    flex: 1,
     color: 'gray',
+    textAlign: 'center',
   },
   productPrice: {
-    width: '15%',
+    width: 80,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  productPriceText: {
     fontWeight: 'bold',
     color: 'green',
   },

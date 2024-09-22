@@ -28,7 +28,7 @@ const AppContext = createContext<AppContextState | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [language, setLanguage] = useState<string | null>(null);
+  const [language, setLanguage] = useState<string>('en');
 
   useEffect(() => {
     const fetchLanguage = async () => {
@@ -54,7 +54,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
           if (lang) {
             AsyncStorage.setItem('lang', lang);
           }
-          setLanguage(lang);
+          setLanguage(lang ?? 'en');
         },
         t: (key: string) => i18n.t(key),
       }}

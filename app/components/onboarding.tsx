@@ -16,38 +16,56 @@ import NextButton from './NextButton';
 import LottieView from 'lottie-react-native';
 import tractor from '../../assets/lottie/tractor.json';
 import data from '../../assets/lottie/data.json';
+import { useAppContext } from '../appStore/context';
 
 const { width, height } = Dimensions.get('window');
 
 const OnboardingScreen = ({
   setHasSeenOnboarding,
+  language,
 }: {
   setHasSeenOnboarding: (hasSeen: boolean) => void;
+  language: string;
 }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const [currentIndex, setCurrentIndex] = useState(0);
   const animation = useRef<LottieView>(null);
   const slidesRef = useRef<FlatList>(null);
+  const { t } = useAppContext();
+
   useEffect(() => {
     animation.current?.play();
   }, []);
   const arraylist = [
     {
-      title: 'Welcome to FramPrice24!',
-      description:
-        'We provide a platform where you can view the latest prices for farming-related products.',
+      title: `${
+        language == 'en' ? 'Welcome to FramPrice24!' : 'ಫಾರ್ಮ್ 24 ಗೆ ಸುಸ್ವಾಗತ!'
+      }`,
+      description: `${
+        language == 'en'
+          ? 'We provide a platform where you can view the latest prices for farming-related products.'
+          : 'ನಾವು ಕೃಷಿ ಸಂಬಂಧಿತ ಉತ್ಪನ್ನಗಳ ಇತ್ತೀಚಿನ ಬೆಲೆಗಳನ್ನು ನೋಡುವ ಮೂಲಕ ಒದಗಿಸುವ ವೇದಿಕೆಯನ್ನು ನೀಡುತ್ತೇವೆ.'
+      } `,
       lottie: tractor,
     },
     {
-      title: 'Real-Time Price Updates',
-      description:
-        'We continuously analyze and update prices for farming-related products, providing accurate information for every region, every day.',
+      title: `${
+        language == 'en' ? 'Real-Time Price Updates' : 'ತಕ್ಷಣದ ಬೆಲೆ ನವೀಕರಣಗಳು'
+      }`,
+      description: `${
+        language == 'en'
+          ? 'We continuously analyze and update prices for farming-related products, providing accurate information for every region, every day.'
+          : 'ನಾವು ಕೃಷಿ ಸಂಬಂಧಿತ ಉತ್ಪನ್ನಗಳ ಬೆಲೆಗಳನ್ನು ನಿರಂತರವಾಗಿ ವಿಶ್ಲೇಷಿಸಿ ನವೀಕರಿಸುತ್ತೇವೆ, ಪ್ರತಿಯೊಂದು ಪ್ರದೇಶಕ್ಕೆ ನಿಖರವಾದ ಮಾಹಿತಿಯನ್ನು ಪ್ರತಿದಿನ ಒದಗಿಸುತ್ತೇವೆ.'
+      }`,
       lottie: data,
     },
     {
-      title: 'Disclaimer',
-      description:
-        'The prices displayed are for reference purposes only. We are not liable for any losses or damages resulting from the use of this app.',
+      title: `${language == 'en' ? 'Disclaimer' : 'ನಿರಾಕರಣೆ'}`,
+      description: `${
+        language == 'en'
+          ? 'The prices displayed are for reference purposes only. It can be vary from the actual price.'
+          : 'ಪ್ರದರ್ಶಿಸಲಾದ ಬೆಲೆಗಳು ಕೇವಲ ಮಾಹಿತಿ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಮಾತ್ರ. ಈ ಬೆಲೆಗಳು ವಾಸ್ತವಿಕ ಬೆಲೆಯಿಂದ ಭಿನ್ನವಾಗಿರಬಹುದು.'
+      }`,
       lottie: '',
     },
   ];

@@ -13,6 +13,8 @@ import { currencyFormatter } from '../helperFun/currencyFormatter';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react-native';
 import { dateFormatter } from '../helperFun/dateFormatter';
 import { useAppContext } from '../appStore/context';
+import { debounce } from 'lodash';
+import ShimmeringText from '../components/ShimmerComponent';
 
 const ProductScreen = () => {
   const { product, productId } = useLocalSearchParams<{
@@ -34,8 +36,8 @@ const ProductScreen = () => {
         const response = await GET(
           `/markets/productPriceInAllMarkets/${productId}`
         );
-        setProductData(response.product);
-        setMarketPrices(response.prices);
+        setProductData(response?.product);
+        setMarketPrices(response?.prices);
       } catch (error) {
         console.error('Error fetching product data:', error);
       } finally {
@@ -94,6 +96,10 @@ const ProductScreen = () => {
     </>
   );
 
+  const debouncedRouterPush = debounce((params) => {
+    router.push(params);
+  }, 200);
+
   return (
     <>
       <Stack.Screen
@@ -120,6 +126,14 @@ const ProductScreen = () => {
           <>
             <View style={styles.productInfoContainer}>
               <View style={styles.productImageContainer}>
+                {productData?.isInDemand && (
+                  <ShimmeringText
+                    text='demand'
+                    borderTopRightRadius={8}
+                    borderBottomLeftRadius={8}
+                    t={t}
+                  />
+                )}
                 <Image
                   source={{ uri: productData?.imageURL }}
                   style={styles?.productImage}
@@ -142,7 +156,7 @@ const ProductScreen = () => {
                   style={styles.marketItem}
                   key={`market-${item.market.id}-${index}`}
                   onPress={() => {
-                    router.push({
+                    debouncedRouterPush({
                       pathname: '/market/[market]',
                       params: {
                         productId: productId,
@@ -302,6 +316,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
+    marginTop: 10,
     fontWeight: 'bold',
     marginBottom: 12,
     color: '#333',

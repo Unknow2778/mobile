@@ -10,6 +10,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { GET } from '../api/api';
 import { BarChart } from 'react-native-gifted-charts';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAppContext } from '../appStore/context';
 
 interface PriceHistory {
   _id: string;
@@ -76,6 +77,7 @@ const ProductDataByMarket = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(null);
+  const { language, t } = useAppContext();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -293,14 +295,16 @@ const ProductDataByMarket = ({
             <Text style={styles.text}>{productData.product.name}</Text>
             <View>
               <Text style={styles.priceText}>
-                Current Price: ₹{latestPrice}
+                {t('currentPrice')}: ₹{latestPrice}
               </Text>
-              <View style={styles.predictionContainer}>
-                <Text style={styles.predictionText}>Predicted Price: </Text>
+              {/* <View style={styles.predictionContainer}>
+                <Text style={styles.predictionText}>
+                  {t('variablePrice')}:{' '}
+                </Text>
                 <Text style={styles.predictionTextNumber}>
                   ₹{predictedPrice}
                 </Text>
-              </View>
+              </View> */}
             </View>
           </View>
         </LinearGradient>
@@ -312,7 +316,7 @@ const ProductDataByMarket = ({
         start={{ x: 0, y: 1 }}
         end={{ x: 0, y: 0 }}
       >
-        <Text style={styles.text}>Price History</Text>
+        <Text style={styles.text}>{t('priceHistory')}</Text>
         {chartData.length > 0 ? (
           <>
             <BarChart
@@ -353,13 +357,13 @@ const ProductDataByMarket = ({
                 </View>
               ) : (
                 <Text style={styles.instructionText}>
-                  Tap a bar to see the date and time
+                  {t('tapBarToSeeDateAndTime')}
                 </Text>
               )}
             </View>
           </>
         ) : (
-          <Text>No price history available</Text>
+          <Text>{t('noPriceHistoryAvailable')}</Text>
         )}
       </LinearGradient>
     </View>

@@ -1,12 +1,27 @@
 {
     "appName": "ಫಾರ್ಮ್ 24",
-    "searchByVegetables": "ತರಕಾರಿಗಳ ಹೆಸರಿನಿಂದ ಹುಡುಕಿ",
+    "searchByVegetables": "ತರಕಾರಿ ಹೆಸರಿನಿಂದ ಹುಡುಕಿ",
     "averagePrice": "ಸರಾಸರಿ ಬೆಲೆ",
-    "noChange": "ಇಲ್ಲ",
-    "highest": "ಹೆಚ್ಚಿನ",
+    "noChange": "ಸಮಾನ",
+    "highest": "ಹೆಚ್ಚು",
     "lowest": "ಕಡಿಮೆ",
     "normal": "ಸಾಮಾನ್ಯ",
-    "products": "ಪ್ರಾಣಿಗಳು",
+    "products": "ತರಕಾರಿಗಳು",
     "date": "ದಿನಾಂಕ",
-    "price": "ಬೆಲೆ"
+    "price": "ಬೆಲೆ",
+    "demand": "ಡಿಮಾಂಡ್",
+    "login": "ಲಗಿನ್",
+    "register": "ನೋಂದಾಯಿಸಿ",
+    "logout": "ನಿರ್ಗಮನ",
+    "unverified": "ಪರಿಶೀಲಿಸಿ",
+    "name": "ಹೆಸರು",
+    "password": "ಪಾಸ್ವರ್ಡ್",
+    "confirmPassword": "ಪಾಸ್ವರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ",
+    "language": "ಭಾಷೆ",
+    "tapBarToSeeDateAndTime": "ಬಾರ್ ಮೇಲೆ ದಿನಾಂಕ ಮತ್ತು ಸಮಯವನ್ನು ಓದಿಕೊಳ್ಳಿ",
+    "variablePrice": "ವೈರಿಯಬಲ್ ಬೆಲೆ",
+    "currentPrice": "ಪ್ರಸ್ತುತ ಬೆಲೆ",
+    "priceHistory": "ಬೆಲೆ ಇತಿಹಾಸ",
+    "noPriceHistoryAvailable": "ಬೆಲೆ ಇತಿಹಾಸ ಇಲ್ಲ"
+   
 }

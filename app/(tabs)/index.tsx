@@ -17,12 +17,17 @@ import Fuse from 'fuse.js';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../appStore/context';
+import { debounce } from 'lodash'; // Add this import at the top of the file
+import ShimmeringText from '../components/ShimmerComponent';
+
 const logo = require('../../assets/images/logo.png');
 
 type DataItem = {
   _id: string; // Add this line to include id in the DataItem type
   name: string;
   imageURL: string;
+  priority: number; // Add this line to include priority in the DataItem type
+  isInDemand?: boolean; // Add this line
 };
 
 const HEADER_MAX_HEIGHT = 130;
@@ -109,7 +114,7 @@ const Home = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const scrollY = useRef(new Animated.Value(0)).current;
   const router = useRouter();
-  const { language, setLanguage } = useAppContext();
+  const { language, setLanguage, t } = useAppContext();
 
   const fetchLanguage = useCallback(async () => {
     try {
@@ -124,7 +129,11 @@ const Home = () => {
     try {
       const data = await GET('/markets/products');
       setDataArray(data.products);
-      setSearchData(data.products);
+
+      const prioritySortedProducts = data.products.sort(
+        (a: DataItem, b: DataItem) => b.priority - a.priority
+      );
+      setSearchData(prioritySortedProducts);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -140,15 +149,39 @@ const Home = () => {
     fetchData();
   }, [language, fetchData]);
 
-  const handleProductPress = (product: DataItem) => {
-    router.push({
-      pathname: '/product/[product]',
-      params: {
-        productId: product._id,
-        product: product.name,
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      // When there's no search query, use the priority-sorted data
+      setSearchData(dataArray.sort((a, b) => b.priority - a.priority));
+    } else {
+      const fuse = new Fuse(dataArray, {
+        keys: ['name'],
+        threshold: 0.3,
+      });
+      const result = fuse.search(searchQuery);
+      // Sort the search results by priority
+      setSearchData(
+        result.map((item) => item.item).sort((a, b) => b.priority - a.priority)
+      );
+    }
+  }, [searchQuery, dataArray]);
+
+  const handleProductPress = useCallback(
+    debounce(
+      (product: DataItem) => {
+        router.push({
+          pathname: '/product/[product]',
+          params: {
+            productId: product._id,
+            product: product.name,
+          },
+        });
       },
-    });
-  };
+      300,
+      { leading: true, trailing: false }
+    ),
+    [router]
+  );
 
   const renderSkeletonItem = () => (
     <View style={styles.skeletonItem}>
@@ -207,6 +240,14 @@ const Home = () => {
                 style={styles.itemContainer}
                 onPress={() => handleProductPress(item)}
               >
+                {item.isInDemand && (
+                  <ShimmeringText
+                    text='demand'
+                    borderTopRightRadius={8}
+                    borderBottomLeftRadius={8}
+                    t={t}
+                  />
+                )}
                 <Image
                   source={{ uri: item.imageURL }}
                   style={styles.productImage}

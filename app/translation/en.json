@@ -8,5 +8,20 @@
     "normal": "Normal",
     "products": "Products",
     "date": "Date",
-    "price": "Price"
+    "price": "Price",
+    "demand": "Demand",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "unverified": "Unverified",
+    "name": "Name",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "language": "Language",
+    "tapBarToSeeDateAndTime": "Tap a bar to see the date and time",
+    "variablePrice": "Variable Price",
+    "currentPrice": "Current Price",
+    "priceHistory": "Price History",
+    "noPriceHistoryAvailable": "No price history available"
+   
 }
