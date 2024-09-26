@@ -1,5 +1,12 @@
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  RefreshControl,
+} from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
 import { GET } from '../api/api';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatDate } from '../helperFun/dateFormatterSimple';
@@ -34,22 +41,30 @@ interface Market {
 const Markets = () => {
   const [markets, setMarkets] = useState<Market[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { language, t } = useAppContext();
   const animation = useRef<LottieView | null>(null);
 
+  const fetchMarkets = async () => {
+    try {
+      const response = await GET('/markets/allMarketProducts');
+      setMarkets(response.marketProducts);
+    } catch (error) {
+      console.error('Error fetching markets:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchMarkets = async () => {
-      try {
-        const response = await GET('/markets/allMarketProducts');
-        setMarkets(response.marketProducts);
-      } catch (error) {
-        console.error('Error fetching markets:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMarkets();
   }, [language]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchMarkets();
+  }, []);
 
   const renderSkeleton = () => (
     <View style={styles.marketContainer}>
@@ -143,6 +158,9 @@ const Markets = () => {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         keyExtractor={(market, index) =>
           loading ? `skeleton-${index}` : `${market.marketId}-${index}`
+        }
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
     </SafeAreaView>

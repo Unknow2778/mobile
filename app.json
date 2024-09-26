@@ -14,10 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "package": "com.farmprice24.farmprice24"
+      "package": "com.farmprice24.farmprice24",
+      "bundleIdentifier": "com.farmprice24.farmprice24"
     },
     "android": {
-      "googleServicesFile": "./assets/google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
@@ -31,8 +31,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-localization",
-      "@react-native-firebase/app"
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

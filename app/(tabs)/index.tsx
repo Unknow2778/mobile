@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../appStore/context';
 import { debounce } from 'lodash'; // Add this import at the top of the file
 import ShimmeringText from '../components/ShimmerComponent';
+import { RefreshControl } from 'react-native'; // Add this import
 
 const logo = require('../../assets/images/logo.png');
 
@@ -115,6 +116,7 @@ const Home = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const router = useRouter();
   const { language, setLanguage, t } = useAppContext();
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchLanguage = useCallback(async () => {
     try {
@@ -140,6 +142,12 @@ const Home = () => {
       setLoading(false);
     }
   }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  }, [fetchData]);
 
   useEffect(() => {
     fetchLanguage();
@@ -200,68 +208,58 @@ const Home = () => {
     </View>
   );
 
+  const renderProductItem = ({ item }: { item: DataItem }) => (
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => handleProductPress(item)}
+    >
+      {item.isInDemand && (
+        <ShimmeringText
+          text='demand'
+          borderTopRightRadius={8}
+          borderBottomLeftRadius={8}
+          t={t}
+        />
+      )}
+      <Image source={{ uri: item.imageURL }} style={styles.productImage} />
+      <Text style={styles.productName}>{item.name}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        <Animated.FlatList
+          style={[styles.flatList, { zIndex: 1 }]} // Increase zIndex
+          contentContainerStyle={[
+            styles.flatListContent,
+            { paddingTop: HEADER_MAX_HEIGHT }, // Add extra padding at the top
+          ]}
+          data={loading ? Array(15).fill(null) : searchData}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true }
+          )}
+          scrollEventThrottle={16}
+          renderItem={loading ? renderSkeletonItem : renderProductItem}
+          keyExtractor={(item, index) => item?._id || index.toString()}
+          horizontal={false}
+          numColumns={3}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              progressViewOffset={HEADER_MAX_HEIGHT} // Add this line
+            />
+          }
+        />
         <DynamicHeader
           value={scrollY}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        {loading ? (
-          <Animated.FlatList
-            style={styles.flatList}
-            contentContainerStyle={styles.flatListContent}
-            data={Array(15).fill(null)}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: true }
-            )}
-            scrollEventThrottle={16}
-            renderItem={renderSkeletonItem}
-            keyExtractor={(_, index) => index.toString()}
-            horizontal={false}
-            numColumns={3}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            showsVerticalScrollIndicator={false}
-          />
-        ) : (
-          <Animated.FlatList
-            style={styles.flatList}
-            contentContainerStyle={styles.flatListContent}
-            data={searchData}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: true }
-            )}
-            scrollEventThrottle={16}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.itemContainer}
-                onPress={() => handleProductPress(item)}
-              >
-                {item.isInDemand && (
-                  <ShimmeringText
-                    text='demand'
-                    borderTopRightRadius={8}
-                    borderBottomLeftRadius={8}
-                    t={t}
-                  />
-                )}
-                <Image
-                  source={{ uri: item.imageURL }}
-                  style={styles.productImage}
-                />
-                <Text style={styles.productName}>{item.name}</Text>
-              </TouchableOpacity>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal={false}
-            numColumns={3}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            showsVerticalScrollIndicator={false}
-          />
-        )}
       </View>
     </SafeAreaView>
   );
@@ -310,7 +308,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     overflow: 'hidden',
-    zIndex: 1000,
+    zIndex: 1000, // Ensure this is higher than the FlatList zIndex
   },
   searchInput: {
     flexGrow: 1,
@@ -321,7 +319,7 @@ const styles = StyleSheet.create({
   flatList: {
     flex: 1,
     backgroundColor: '#F0FDF4',
-    paddingTop: HEADER_MAX_HEIGHT,
+    // Remove paddingTop from here
     paddingHorizontal: 8,
   },
   itemContainer: {
@@ -351,6 +349,7 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     paddingBottom: 190,
+    // paddingTop will be added dynamically
   },
   separator: {
     height: 4,

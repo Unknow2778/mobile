@@ -5,12 +5,17 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { GET } from '../api/api';
 import { currencyFormatter } from '../helperFun/currencyFormatter';
-import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react-native';
+import {
+  IconTrendingDown,
+  IconTrendingUp,
+  IconBrandWhatsapp,
+} from '@tabler/icons-react-native';
 import { dateFormatter } from '../helperFun/dateFormatter';
 import { useAppContext } from '../appStore/context';
 import { debounce } from 'lodash';
@@ -28,6 +33,8 @@ const ProductScreen = () => {
   const [highestPrice, setHighestPrice] = useState(0);
   const [lowestPrice, setLowestPrice] = useState(Infinity);
   const { t, language } = useAppContext();
+  const [refreshing, setRefreshing] = useState(false);
+  const contentRef = React.useRef(null);
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -74,6 +81,31 @@ const ProductScreen = () => {
     }
   }, [marketPrices]);
 
+  const fetchProductData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await GET(
+        `/markets/productPriceInAllMarkets/${productId}`
+      );
+      setProductData(response?.product);
+      setMarketPrices(response?.prices);
+    } catch (error) {
+      console.error('Error fetching product data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [productId]);
+
+  useEffect(() => {
+    fetchProductData();
+  }, [fetchProductData]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchProductData();
+    setRefreshing(false);
+  }, [fetchProductData]);
+
   const renderSkeletonLoader = () => (
     <>
       <View style={styles.skeletonProductInfo}>
@@ -104,7 +136,9 @@ const ProductScreen = () => {
     <>
       <Stack.Screen
         options={{
-          title: product || 'Product Details',
+          title: product
+            ? product.charAt(0).toUpperCase() + product.slice(1)
+            : 'Product Details',
           headerShown: true,
           headerTitleStyle: {
             color: '#fff',
@@ -119,7 +153,7 @@ const ProductScreen = () => {
           headerShadowVisible: true,
         }}
       />
-      <View style={styles.container}>
+      <View style={styles.container} ref={contentRef}>
         {isLoading ? (
           renderSkeletonLoader()
         ) : (
@@ -250,6 +284,9 @@ const ProductScreen = () => {
                 `market-${item.market.id}-${index}`
               }
               contentContainerStyle={styles.marketList}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
             />
           </>
         )}

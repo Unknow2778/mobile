@@ -1,10 +1,11 @@
 {
   "cli": {
-    "version": ">= 0.43.0"
+    "version": ">= 0.43.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "preview": {
-        "env": {
+      "env": {
         "EXPO_PUBLIC_API_URL": "https://farmprice24-im4nw.ondigitalocean.app"
       },
       "distribution": "internal",
@@ -16,7 +17,8 @@
       }
     },
     "production": {
-       "env": {
+      "autoIncrement": true,
+      "env": {
         "EXPO_PUBLIC_API_URL": "https://farmprice24-im4nw.ondigitalocean.app"
       },
       "android": {
