@@ -22,6 +22,8 @@
     "variablePrice": "Variable Price",
     "currentPrice": "Current Price",
     "priceHistory": "Price History",
-    "noPriceHistoryAvailable": "No price history available"
-   
+    "noPriceHistoryAvailable": "No price history available",
+    "sharemessage": "Check out this product",
+    "shareapp": "Download our app",
+    "sharemessage2": "Join our WhatsApp group"
 }

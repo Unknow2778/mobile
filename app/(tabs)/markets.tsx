@@ -68,11 +68,14 @@ const Markets = () => {
 
   const renderSkeleton = () => (
     <View style={styles.marketContainer}>
-      <View style={[styles.skeleton, styles.marketNameSkeleton]} />
+      <View style={styles.marketLocation}>
+        <View style={[styles.skeleton, styles.marketPinSkeleton]} />
+        <View style={[styles.skeleton, styles.marketNameSkeleton]} />
+      </View>
       <View style={styles.headerRow}>
-        <View style={[styles.skeleton, styles.headerSkeleton]} />
-        <View style={[styles.skeleton, styles.headerSkeleton]} />
-        <View style={[styles.skeleton, styles.headerSkeleton]} />
+        <View style={[styles.skeleton, styles.headerProductSkeleton]} />
+        <View style={[styles.skeleton, styles.headerDateSkeleton]} />
+        <View style={[styles.skeleton, styles.headerPriceSkeleton]} />
       </View>
       {[...Array(10)].map((_, index) => (
         <View key={index} style={styles.productRow}>
@@ -85,6 +88,15 @@ const Markets = () => {
         </View>
       ))}
     </View>
+  );
+
+  const ShimmerPlaceholder = ({ style }: { style: any }) => (
+    <LinearGradient
+      colors={['#f0f0f0', '#e0e0e0', '#f0f0f0']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={[style, styles.shimmer]}
+    />
   );
 
   return (
@@ -268,14 +280,26 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     overflow: 'hidden',
   },
+  marketPinSkeleton: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+  },
   marketNameSkeleton: {
     height: 24,
     width: '60%',
-    marginBottom: 10,
   },
-  headerSkeleton: {
+  headerProductSkeleton: {
     height: 16,
     width: '30%',
+  },
+  headerDateSkeleton: {
+    height: 16,
+    width: '20%',
+  },
+  headerPriceSkeleton: {
+    height: 16,
+    width: '15%',
   },
   productImageSkeleton: {
     width: 20,
@@ -284,18 +308,25 @@ const styles = StyleSheet.create({
   },
   productNameSkeleton: {
     height: 16,
-    width: '60%',
+    width: '40%',
   },
   productDateSkeleton: {
     height: 16,
-    width: '30%',
+    width: '20%',
   },
   productPriceSkeleton: {
     height: 16,
-    width: '20%',
+    width: '15%',
   },
   productSeparator: {
     height: 10,
+  },
+  shimmer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
 

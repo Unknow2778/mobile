@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState, useCallback } from 'react';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
@@ -20,6 +21,10 @@ import { dateFormatter } from '../helperFun/dateFormatter';
 import { useAppContext } from '../appStore/context';
 import { debounce } from 'lodash';
 import ShimmeringText from '../components/ShimmerComponent';
+import { captureRef } from 'react-native-view-shot';
+import Share from 'react-native-share';
+import FloatingWhatsAppButton from '../components/FloatingWhatsAppButton';
+import { getAppStoreLink } from '../helperFun/getAppStoreLink';
 
 const ProductScreen = () => {
   const { product, productId } = useLocalSearchParams<{
@@ -131,6 +136,49 @@ const ProductScreen = () => {
   const debouncedRouterPush = debounce((params) => {
     router.push(params);
   }, 200);
+
+  const shareScreenshot = async () => {
+    try {
+      // Capture the screenshot
+      const uri = await captureRef(contentRef, {
+        format: 'png',
+        quality: 0.8,
+      });
+
+      const whatsappLink = 'https://chat.whatsapp.com/Cj9dzXxokVr25exbpO3Ae0';
+
+      const appStoreLink = await getAppStoreLink();
+      const message = `${t('sharemessage')} ${product}\n\n${t(
+        'shareapp'
+      )} ${appStoreLink} \n\n ${t('sharemessage2')} ${whatsappLink}`;
+
+      // Share both image and text
+      const shareOptions = {
+        title: 'Share Product Details',
+        message: message,
+        url: uri,
+        type: 'image/png',
+      };
+
+      const ShareResponse = await Share.open(shareOptions);
+
+      if (ShareResponse.success) {
+        console.log('Shared successfully');
+      } else {
+        console.log('Share cancelled');
+      }
+    } catch (error) {
+      if ((error as any).message.includes('User did not share')) {
+        console.log('User cancelled sharing');
+      } else {
+        console.error('Error sharing screenshot:', error);
+        Alert.alert(
+          'Error',
+          'There was an error sharing the screenshot. Please try again.'
+        );
+      }
+    }
+  };
 
   return (
     <>
@@ -291,6 +339,7 @@ const ProductScreen = () => {
           </>
         )}
       </View>
+      <FloatingWhatsAppButton onPress={shareScreenshot} />
     </>
   );
 };
@@ -300,6 +349,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F0FDF4',
     padding: 10,
+    paddingBottom: 80,
   },
   productContainer: {
     borderRadius: 12,

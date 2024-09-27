@@ -10,7 +10,7 @@
     "date": "ದಿನಾಂಕ",
     "price": "ಬೆಲೆ",
     "demand": "ಡಿಮಾಂಡ್",
-    "login": "ಲಗಿನ್",
+    "login": "ಲಾಗಿನ್",
     "register": "ನೋಂದಾಯಿಸಿ",
     "logout": "ನಿರ್ಗಮನ",
     "unverified": "ಪರಿಶೀಲಿಸಿ",
@@ -22,6 +22,8 @@
     "variablePrice": "ವೈರಿಯಬಲ್ ಬೆಲೆ",
     "currentPrice": "ಪ್ರಸ್ತುತ ಬೆಲೆ",
     "priceHistory": "ಬೆಲೆ ಇತಿಹಾಸ",
-    "noPriceHistoryAvailable": "ಬೆಲೆ ಇತಿಹಾಸ ಇಲ್ಲ"
-   
+    "noPriceHistoryAvailable": "ಬೆಲೆ ಇತಿಹಾಸ ಇಲ್ಲ",
+    "sharemessage": "ಈ ತರಕಾರಿಯನ್ನು ಪರಿಶೀಲಿಸಿ",
+    "shareapp": "ನಮ್ಮ ಅಪ್ಲಿಕೇಶನ್ ಡೌನ್ಲೋಡ್ ಮಾಡಿ",
+    "sharemessage2": "ನಮ್ಮ ವಾಟ್ಸ್ಅಪ್ ಗ್ರೂಪ್ ಸೇರಿಕೊಳ್ಳಿ"
 }
