@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import {
-  IconCarrot,
+  IconChartLine,
   IconNews,
   IconBasketPin,
   IconUser,
@@ -39,10 +39,10 @@ export default function TabLayout() {
         <Tabs.Screen
           name='index'
           options={{
-            title: 'Home',
+            title: 'Rates',
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <IconCarrot color={color} size={24} strokeWidth={1.5} />
+              <IconChartLine color={color} size={24} strokeWidth={2} />
             ),
           }}
         />
@@ -52,7 +52,7 @@ export default function TabLayout() {
             title: 'Markets',
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <IconBasketPin color={color} size={24} strokeWidth={1.5} />
+              <IconBasketPin color={color} size={24} strokeWidth={2} />
             ),
           }}
         />
@@ -62,7 +62,7 @@ export default function TabLayout() {
             title: 'News',
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <IconNews color={color} size={24} strokeWidth={1.5} />
+              <IconNews color={color} size={24} strokeWidth={2} />
             ),
           }}
         />
@@ -72,7 +72,7 @@ export default function TabLayout() {
             title: 'Profile',
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <IconUser color={color} size={24} strokeWidth={1.5} />
+              <IconUser color={color} size={24} strokeWidth={2} />
             ),
           }}
         />

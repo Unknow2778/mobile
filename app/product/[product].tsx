@@ -25,6 +25,7 @@ import { captureRef } from 'react-native-view-shot';
 import Share from 'react-native-share';
 import FloatingWhatsAppButton from '../components/FloatingWhatsAppButton';
 import { getAppStoreLink } from '../helperFun/getAppStoreLink';
+import analytics from '@react-native-firebase/analytics';
 
 const ProductScreen = () => {
   const { product, productId } = useLocalSearchParams<{
@@ -43,6 +44,10 @@ const ProductScreen = () => {
 
   useEffect(() => {
     const fetchProductData = async () => {
+      analytics().logEvent('product_press', {
+        productId: productId,
+        productName: productData?.name,
+      });
       setIsLoading(true);
       try {
         const response = await GET(
@@ -164,6 +169,10 @@ const ProductScreen = () => {
 
       if (ShareResponse.success) {
         console.log('Shared successfully');
+        analytics().logEvent('product_share', {
+          productId: productId,
+          productName: productData?.name,
+        });
       } else {
         console.log('Share cancelled');
       }

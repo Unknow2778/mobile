@@ -25,5 +25,8 @@
     "noPriceHistoryAvailable": "No price history available",
     "sharemessage": "Check out this product",
     "shareapp": "Download our app",
-    "sharemessage2": "Join our WhatsApp group"
+    "sharemessage2": "Join our WhatsApp group",
+    "notifications": "Notifications",
+    "notificationTitle": "Farm Price 24",
+    "notificationDetails": "Welcome to Farm Price 24. We are a platform that provides information about the live price of vegetables in the market."
 }

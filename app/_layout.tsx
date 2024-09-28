@@ -15,12 +15,27 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'react-native';
 import { IconWorld } from '@tabler/icons-react-native';
+import { LogLevel, OneSignal } from 'react-native-onesignal';
 
 const RootLayout = () => {
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [language, setLanguage] = useState('en');
+
+  OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+
+  // OneSignal Initialization
+  OneSignal.initialize('f55b8a54-af71-4a8e-92df-f9afbe05e3aa');
+
+  // requestPermission will show the native iOS or Android notification permission prompt.
+  // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal.Notifications.requestPermission(true);
+
+  // Method for listening for notification clicks
+  // OneSignal.Notifications.addEventListener('click', (event) => {
+  //   console.log('OneSignal: notification clicked:', event);
+  // });
 
   useEffect(() => {
     const checkOnboardingAndLanguage = async () => {

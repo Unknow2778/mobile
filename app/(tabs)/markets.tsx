@@ -17,6 +17,7 @@ import { useAppContext } from '../appStore/context';
 import LottieView from 'lottie-react-native';
 import { useRef } from 'react';
 import fire from '../../assets/lottie/fire.json';
+import analytics from '@react-native-firebase/analytics';
 
 interface Product {
   _id: string;
@@ -62,6 +63,7 @@ const Markets = () => {
   }, [language]);
 
   const onRefresh = useCallback(() => {
+    analytics().logEvent('markets_refresh');
     setRefreshing(true);
     fetchMarkets();
   }, []);
@@ -316,6 +318,7 @@ const styles = StyleSheet.create({
   },
   productPriceSkeleton: {
     height: 16,
+    marginLeft: 10,
     width: '15%',
   },
   productSeparator: {

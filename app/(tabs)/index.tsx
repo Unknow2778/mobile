@@ -14,12 +14,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Animated } from 'react-native';
 import { IconBell, IconSearch } from '@tabler/icons-react-native';
 import Fuse from 'fuse.js';
-import { useRouter } from 'expo-router';
+import { router, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../appStore/context';
 import { debounce } from 'lodash'; // Add this import at the top of the file
 import ShimmeringText from '../components/ShimmerComponent';
 import { RefreshControl } from 'react-native'; // Add this import
+import analytics from '@react-native-firebase/analytics';
 
 const logo = require('../../assets/images/logo.png');
 
@@ -87,7 +88,9 @@ const DynamicHeader = ({
             </View>
             <Text style={styles.logoText}>{t('appName')}</Text>
           </View>
-          <IconBell size={24} color='#fff' />
+          <TouchableOpacity onPress={() => router.push('/notification')}>
+            <IconBell size={24} color='#fff' />
+          </TouchableOpacity>
         </Animated.View>
       </View>
       <LinearGradient
@@ -177,6 +180,10 @@ const Home = () => {
   const handleProductPress = useCallback(
     debounce(
       (product: DataItem) => {
+        analytics().logEvent('product_press', {
+          productId: product._id,
+          productName: product.name,
+        });
         router.push({
           pathname: '/product/[product]',
           params: {
@@ -227,7 +234,7 @@ const Home = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.container}>
         <Animated.FlatList
           style={[styles.flatList, { zIndex: 1 }]} // Increase zIndex
@@ -237,7 +244,7 @@ const Home = () => {
           ]}
           data={loading ? Array(15).fill(null) : searchData}
           onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }], // Adjusted to match the new style
             { useNativeDriver: true }
           )}
           scrollEventThrottle={16}
@@ -348,7 +355,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   flatListContent: {
-    paddingBottom: 190,
+    paddingBottom: 100, // Reduced from 190 to 100
     // paddingTop will be added dynamically
   },
   separator: {

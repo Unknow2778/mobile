@@ -18,6 +18,7 @@
       "bundleIdentifier": "com.farmprice24.farmprice24"
     },
     "android": {
+      "googleServicesFile": "./assets/google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
@@ -31,7 +32,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-localization"
+      "expo-localization",
+      "@react-native-firebase/app"
     ],
     "experiments": {
       "typedRoutes": true

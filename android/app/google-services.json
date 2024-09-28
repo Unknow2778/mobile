@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "16817100587",
+    "project_id": "farm-price-24",
+    "storage_bucket": "farm-price-24.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16817100587:android:aa2fda78166d0bebe4576e",
+        "android_client_info": {
+          "package_name": "com.farmprice24.farmprice24"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIF1dkw6owETMFOlJriOIIacjGanDXtyc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
