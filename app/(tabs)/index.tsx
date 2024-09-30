@@ -240,7 +240,7 @@ const Home = () => {
           style={[styles.flatList, { zIndex: 1 }]} // Increase zIndex
           contentContainerStyle={[
             styles.flatListContent,
-            { paddingTop: HEADER_MAX_HEIGHT }, // Add extra padding at the top
+            { paddingTop: HEADER_MAX_HEIGHT - 10 }, // Add extra padding at the top
           ]}
           data={loading ? Array(15).fill(null) : searchData}
           onScroll={Animated.event(

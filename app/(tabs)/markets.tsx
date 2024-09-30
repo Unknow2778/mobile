@@ -23,16 +23,19 @@ interface Product {
   _id: string;
   name: string;
   imageURL: string;
+  priority: number;
 }
 
 interface MarketProduct {
   product: Product;
   date: string;
   currentPrice: number;
+  priority: number;
 }
 interface Market {
   market: {
     place: string;
+    priority?: number; // Make priority optional
   };
   marketId: string;
   place: string;
@@ -49,7 +52,20 @@ const Markets = () => {
   const fetchMarkets = async () => {
     try {
       const response = await GET('/markets/allMarketProducts');
-      setMarkets(response.marketProducts);
+      const filteredMarkets = response.marketProducts
+        .map((market: Market) => ({
+          ...market,
+          products: market.products.sort(
+            (a: MarketProduct, b: MarketProduct) => b.priority - a.priority
+          ),
+        }))
+        .sort((a: Market, b: Market) => {
+          // Use a default priority of 0 if not present
+          const priorityA = a.market.priority ?? 0;
+          const priorityB = b.market.priority ?? 0;
+          return priorityB - priorityA;
+        });
+      setMarkets(filteredMarkets);
     } catch (error) {
       console.error('Error fetching markets:', error);
     } finally {
@@ -105,7 +121,11 @@ const Markets = () => {
     <SafeAreaView style={styles.container}>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={loading ? [...Array(3)] : markets}
+        data={
+          loading
+            ? [...Array(3)]
+            : markets.filter((market) => market.products.length > 0)
+        }
         contentContainerStyle={styles.flatListContent}
         renderItem={
           loading
@@ -123,7 +143,11 @@ const Markets = () => {
                   </View>
                   <FlatList
                     showsVerticalScrollIndicator={false}
-                    data={item.products}
+                    data={item.products.sort(
+                      (a: MarketProduct, b: MarketProduct) => {
+                        return b.product.priority - a.product.priority;
+                      }
+                    )}
                     renderItem={({ item }) => (
                       <View style={styles.productRow}>
                         <View style={styles.productImageContainer}>

@@ -189,6 +189,14 @@ const ProductScreen = () => {
     }
   };
 
+  const getPriceTextStyle = useCallback((productName: string) => {
+    const isTomato = productName.toLowerCase().includes('tomato');
+    return {
+      fontSize: isTomato ? 16 : 20,
+      fontWeight: isTomato ? '400' : ('600' as '400' | '600'),
+    };
+  }, []);
+
   return (
     <>
       <Stack.Screen
@@ -281,8 +289,27 @@ const ProductScreen = () => {
                       </Text>
                     </View>
                   </View>
+                  {productData?.name.includes(t('tomato')) && (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        gap: 5,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text style={{ fontSize: 20, fontWeight: '600' }}>
+                        {currencyFormatter(item.price * 25)}
+                      </Text>
+                      <Text style={styles.priceTitle}>/create</Text>
+                    </View>
+                  )}
                   <View style={styles.priceContainer}>
-                    <Text style={styles.currentPrice}>
+                    <Text
+                      style={[
+                        styles.priceText,
+                        getPriceTextStyle(productData?.name),
+                      ]}
+                    >
                       {currencyFormatter(item.price)}
                     </Text>
                     <Text style={styles.priceTitle}>
@@ -443,10 +470,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     gap: 5,
   },
-  currentPrice: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
   priceTitle: {
     fontSize: 16,
     color: '#888',
@@ -513,6 +536,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#fff',
+  },
+  priceText: {
+    // Add any common styles for the price text here
   },
 });
 
