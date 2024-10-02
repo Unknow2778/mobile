@@ -1,3 +1,3 @@
 export const currencyFormatter = (amount: number) => {
-    return  '₹' + amount ;
+    return  '₹' + amount.toFixed(2);
     }

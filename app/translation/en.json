@@ -29,5 +29,6 @@
     "notifications": "Notifications",
     "notificationTitle": "Farm Price 24",
     "notificationDetails": "Welcome to Farm Price 24. We are a platform that provides information about the live price of vegetables in the market.",
-    "tomato": "tomato"
+    "tomato": "tomato",
+    "Today's rates not updated yet": "Today's rates not updated yet"
 }

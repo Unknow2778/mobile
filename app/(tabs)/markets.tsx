@@ -49,18 +49,31 @@ const Markets = () => {
   const { language, t } = useAppContext();
   const animation = useRef<LottieView | null>(null);
 
+  const isCurrentDate = (dateString: string) => {
+    const today = new Date();
+    const productDate = new Date(dateString);
+    return (
+      productDate.getDate() === today.getDate() &&
+      productDate.getMonth() === today.getMonth() &&
+      productDate.getFullYear() === today.getFullYear()
+    );
+  };
+
   const fetchMarkets = async () => {
     try {
       const response = await GET('/markets/allMarketProducts');
       const filteredMarkets = response.marketProducts
         .map((market: Market) => ({
           ...market,
-          products: market.products.sort(
-            (a: MarketProduct, b: MarketProduct) => b.priority - a.priority
-          ),
+          products: market.products
+            .filter((product: MarketProduct) => isCurrentDate(product.date))
+            .sort(
+              (a: MarketProduct, b: MarketProduct) => b.priority - a.priority
+            ),
         }))
+        // Remove this filter to include markets with no products
+        // .filter((market: Market) => market.products.length > 0)
         .sort((a: Market, b: Market) => {
-          // Use a default priority of 0 if not present
           const priorityA = a.market.priority ?? 0;
           const priorityB = b.market.priority ?? 0;
           return priorityB - priorityA;
@@ -121,11 +134,7 @@ const Markets = () => {
     <SafeAreaView style={styles.container}>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={
-          loading
-            ? [...Array(3)]
-            : markets.filter((market) => market.products.length > 0)
-        }
+        data={loading ? [...Array(3)] : markets}
         contentContainerStyle={styles.flatListContent}
         renderItem={
           loading
@@ -136,60 +145,68 @@ const Markets = () => {
                     <IconMapPin size={20} color='green' />
                     <Text style={styles.marketName}>{item.market.place}</Text>
                   </View>
-                  <View style={styles.headerRow}>
-                    <Text style={styles.headerProduct}>{t('products')}</Text>
-                    <Text style={styles.headerDate}>{t('date')}</Text>
-                    <Text style={styles.headerPrice}>{t('price')}</Text>
-                  </View>
-                  <FlatList
-                    showsVerticalScrollIndicator={false}
-                    data={item.products.sort(
-                      (a: MarketProduct, b: MarketProduct) => {
-                        return b.product.priority - a.product.priority;
-                      }
-                    )}
-                    renderItem={({ item }) => (
-                      <View style={styles.productRow}>
-                        <View style={styles.productImageContainer}>
-                          <Image
-                            source={{ uri: item.product.imageURL }}
-                            style={styles.productImage}
-                          />
-                          <Text style={styles.productName}>
-                            {item.product.name}
-                          </Text>
-                        </View>
-                        <Text style={styles.productDate}>
-                          {formatDate(item.date)}
+                  {item.products.length > 0 ? (
+                    <>
+                      <View style={styles.headerRow}>
+                        <Text style={styles.headerProduct}>
+                          {t('products')}
                         </Text>
-                        <View style={styles.productPrice}>
-                          {item.product.isInDemand && (
-                            <View style={styles.fireIconContainer}>
-                              <LottieView
-                                autoPlay
-                                ref={animation}
-                                style={{
-                                  width: 20,
-                                  height: 20,
-                                }}
-                                source={fire}
-                              />
-                            </View>
-                          )}
-                          <Text style={styles.productPriceText}>
-                            {currencyFormatter(item.currentPrice)}
-                          </Text>
-                        </View>
+                        <Text style={styles.headerDate}>{t('date')}</Text>
+                        <Text style={styles.headerPrice}>{t('price')}</Text>
                       </View>
-                    )}
-                    keyExtractor={(product, index) =>
-                      `${product.product._id}-${index}`
-                    }
-                    ItemSeparatorComponent={() => (
-                      <View style={styles.productSeparator} />
-                    )}
-                    ListFooterComponentStyle={{ marginBottom: 10 }}
-                  />
+                      <FlatList
+                        showsVerticalScrollIndicator={false}
+                        data={item.products}
+                        renderItem={({ item }) => (
+                          <View style={styles.productRow}>
+                            <View style={styles.productImageContainer}>
+                              <Image
+                                source={{ uri: item.product.imageURL }}
+                                style={styles.productImage}
+                              />
+                              <Text style={styles.productName}>
+                                {item.product.name}
+                              </Text>
+                            </View>
+                            <Text style={styles.productDate}>
+                              {formatDate(item.date)}
+                            </Text>
+                            <View style={styles.productPrice}>
+                              {item.product.isInDemand && (
+                                <View style={styles.fireIconContainer}>
+                                  <LottieView
+                                    autoPlay
+                                    ref={animation}
+                                    style={{
+                                      width: 20,
+                                      height: 20,
+                                    }}
+                                    source={fire}
+                                  />
+                                </View>
+                              )}
+                              <Text style={styles.productPriceText}>
+                                {currencyFormatter(item.currentPrice)}
+                              </Text>
+                            </View>
+                          </View>
+                        )}
+                        keyExtractor={(product, index) =>
+                          `${product.product._id}-${index}`
+                        }
+                        ItemSeparatorComponent={() => (
+                          <View style={styles.productSeparator} />
+                        )}
+                        ListFooterComponentStyle={{ marginBottom: 10 }}
+                      />
+                    </>
+                  ) : (
+                    <View style={styles.noDataContainer}>
+                      <Text style={styles.noDataText}>
+                        {t("Today's rates not updated yet")}
+                      </Text>
+                    </View>
+                  )}
                 </View>
               )
         }
@@ -354,6 +371,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  noDataContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noDataText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666', // Darker color for better visibility
+    fontWeight: '500', // Slightly bolder
   },
 });
 

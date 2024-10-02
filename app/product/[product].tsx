@@ -42,6 +42,11 @@ const ProductScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const contentRef = React.useRef(null);
 
+  // Add this new function to sort the market prices
+  const sortMarketPrices = useCallback((prices: any) => {
+    return [...prices].sort((a, b) => a.price - b.price);
+  }, []);
+
   useEffect(() => {
     const fetchProductData = async () => {
       analytics().logEvent('product_press', {
@@ -54,7 +59,8 @@ const ProductScreen = () => {
           `/markets/productPriceInAllMarkets/${productId}`
         );
         setProductData(response?.product);
-        setMarketPrices(response?.prices);
+        // Sort the prices before setting the state
+        setMarketPrices(sortMarketPrices(response?.prices));
       } catch (error) {
         console.error('Error fetching product data:', error);
       } finally {
@@ -63,7 +69,7 @@ const ProductScreen = () => {
     };
 
     fetchProductData();
-  }, [productId]);
+  }, [productId, sortMarketPrices]);
 
   const getPriceChangePercentage = (
     currentPrice: number,
@@ -98,13 +104,14 @@ const ProductScreen = () => {
         `/markets/productPriceInAllMarkets/${productId}`
       );
       setProductData(response?.product);
-      setMarketPrices(response?.prices);
+      // Sort the prices before setting the state
+      setMarketPrices(sortMarketPrices(response?.prices));
     } catch (error) {
       console.error('Error fetching product data:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [productId]);
+  }, [productId, sortMarketPrices]);
 
   useEffect(() => {
     fetchProductData();
@@ -249,7 +256,7 @@ const ProductScreen = () => {
             </View>
             <Text style={styles.sectionTitle}>Market Prices</Text>
             <FlatList
-              data={marketPrices}
+              data={marketPrices} // This will now be sorted from lowest to highest
               renderItem={({ item, index }) => (
                 <TouchableOpacity
                   style={styles.marketItem}
@@ -300,7 +307,7 @@ const ProductScreen = () => {
                       <Text style={{ fontSize: 20, fontWeight: '600' }}>
                         {currencyFormatter(item.price * 25)}
                       </Text>
-                      <Text style={styles.priceTitle}>/create</Text>
+                      <Text style={styles.priceTitle}>/crate</Text>
                     </View>
                   )}
                   <View style={styles.priceContainer}>
@@ -384,8 +391,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F0FDF4',
-    padding: 10,
-    paddingBottom: 80,
+    paddingHorizontal: 5,
+    paddingTop: 10,
   },
   productContainer: {
     borderRadius: 12,
@@ -405,7 +412,7 @@ const styles = StyleSheet.create({
   productImageContainer: {
     borderRadius: 12,
     overflow: 'hidden',
-    padding: 5,
+    padding: 10,
   },
   productInfoContainer: {
     flexDirection: 'row',
@@ -446,6 +453,7 @@ const styles = StyleSheet.create({
   },
   marketList: {
     gap: 5,
+    paddingBottom: 80,
   },
   marketItem: {
     backgroundColor: '#fff',

@@ -50,21 +50,21 @@ const OnboardingScreen = ({
     },
     {
       title: `${
-        language == 'en' ? 'Real-Time Price Updates' : 'ತಕ್ಷಣದ ಬೆಲೆ ನವೀಕರಣಗಳು'
+        language == 'en' ? 'Real-Time Price Updates' : 'ಬೆಲೆ ಸಂಬಂಧಿತ ನವೀಕರಣಗಳು'
       }`,
       description: `${
         language == 'en'
-          ? 'We continuously analyze and update prices for farming-related products, providing accurate information for every region, every day.'
-          : 'ನಾವು ಕೃಷಿ ಸಂಬಂಧಿತ ಉತ್ಪನ್ನಗಳ ಬೆಲೆಗಳನ್ನು ನಿರಂತರವಾಗಿ ವಿಶ್ಲೇಷಿಸಿ ನವೀಕರಿಸುತ್ತೇವೆ, ಪ್ರತಿಯೊಂದು ಪ್ರದೇಶಕ್ಕೆ ನಿಖರವಾದ ಮಾಹಿತಿಯನ್ನು ಪ್ರತಿದಿನ ಒದಗಿಸುತ್ತೇವೆ.'
+          ? 'We continuously analyze and update prices for farming-related products, providing accurate information for every region, every day'
+          : 'ನಾವು ಕೃಷಿ ಸಂಬಂಧಿತ ಉತ್ಪನ್ನಗಳ ಇತ್ತೀಚಿನ ಬೆಲೆಯನ್ನು ನೋಡುವ ವೇದಿಕೆಯನ್ನು ಒದಗಿಸುತ್ತೇವೆ.'
       }`,
       lottie: data,
     },
     {
-      title: `${language == 'en' ? 'Disclaimer' : 'ನಿರಾಕರಣೆ'}`,
+      title: `${language == 'en' ? 'Disclaimer' : 'ಸೂಚನೆ'}`,
       description: `${
         language == 'en'
-          ? 'The prices displayed are for reference purposes only. It can be vary from the actual price.'
-          : 'ಪ್ರದರ್ಶಿಸಲಾದ ಬೆಲೆಗಳು ಕೇವಲ ಮಾಹಿತಿ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಮಾತ್ರ. ಈ ಬೆಲೆಗಳು ವಾಸ್ತವಿಕ ಬೆಲೆಯಿಂದ ಭಿನ್ನವಾಗಿರಬಹುದು.'
+          ? 'The prices displayed here are for reference purposes only and may vary from the actual market price'
+          : 'ಇಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಬೆಲೆಗಳು ಉಲ್ಲೇಖದ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಮಾತ್ರ ಮತ್ತು ನಿಜವಾದ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಯಿಂದ ಬದಲಾಗಬಹುದು'
       }`,
       lottie: '',
     },
