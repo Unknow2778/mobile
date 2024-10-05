@@ -43,8 +43,8 @@ const OnboardingScreen = ({
       }`,
       description: `${
         language == 'en'
-          ? 'We provide a platform where you can view the latest prices for farming-related products.'
-          : 'ನಾವು ಕೃಷಿ ಸಂಬಂಧಿತ ಉತ್ಪನ್ನಗಳ ಇತ್ತೀಚಿನ ಬೆಲೆಗಳನ್ನು ನೋಡುವ ಮೂಲಕ ಒದಗಿಸುವ ವೇದಿಕೆಯನ್ನು ನೀಡುತ್ತೇವೆ.'
+          ? 'We provide a platform where you can view the latest prices of farming-related products.'
+          : 'ನಾವು ಕೃಷಿ ಸಂಬಂಧಿತ ಉತ್ಪನ್ನಗಳ ಇತ್ತೀಚಿನ ಬೆಲೆಯನ್ನು ವೀಕ್ಷಿಸುವ ವೇದಿಕೆಯನ್ನು ಒದಗಿಸುತ್ತೇವೆ.'
       } `,
       lottie: tractor,
     },
@@ -55,7 +55,7 @@ const OnboardingScreen = ({
       description: `${
         language == 'en'
           ? 'We continuously analyze and update prices for farming-related products, providing accurate information for every region, every day'
-          : 'ನಾವು ಕೃಷಿ ಸಂಬಂಧಿತ ಉತ್ಪನ್ನಗಳ ಇತ್ತೀಚಿನ ಬೆಲೆಯನ್ನು ನೋಡುವ ವೇದಿಕೆಯನ್ನು ಒದಗಿಸುತ್ತೇವೆ.'
+          : 'ನಾವು ಕೃಷಿ-ಸಂಬಂಧಿತ ಉತ್ಪನ್ನಗಳ ಬೆಲೆಗಳನ್ನು ನಿರಂತರವಾಗಿ ವಿಶ್ಲೇಷಿಸುತ್ತೇವೆ ಮತ್ತು ನವೀಕರಿಸುತ್ತೇವೆ ಹಾಗು ಪ್ರತಿ ಪ್ರದೇಶಕ್ಕೆ, ಪ್ರತಿದಿನ ನಿಖರವಾದ ಮಾಹಿತಿಯನ್ನು ಒದಗಿಸುತ್ತೇವೆ.'
       }`,
       lottie: data,
     },
@@ -64,7 +64,7 @@ const OnboardingScreen = ({
       description: `${
         language == 'en'
           ? 'The prices displayed here are for reference purposes only and may vary from the actual market price'
-          : 'ಇಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಬೆಲೆಗಳು ಉಲ್ಲೇಖದ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಮಾತ್ರ ಮತ್ತು ನಿಜವಾದ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಯಿಂದ ಬದಲಾಗಬಹುದು'
+          : 'ಇಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಬೆಲೆಗಳು ಉಲ್ಲೇಖ ಉದ್ದೇಶಕ್ಕಾಗಿ ಮಾತ್ರ. ಇದು ವಾಸ್ತವ ಮಾರುಕಟ್ಟೆ ದರದಿಂದ ಭಿನ್ನವಾಗಬಹುದು.'
       }`,
       lottie: '',
     },
